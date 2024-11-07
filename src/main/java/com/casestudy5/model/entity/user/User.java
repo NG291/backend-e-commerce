@@ -33,7 +33,6 @@ public class User {
     @Email
     @Column(unique = true)
     private String email;
-    @NotNull
     private LocalDate birthDate;
     @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;
