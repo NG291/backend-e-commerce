@@ -5,6 +5,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Set;
 
 @Entity
@@ -32,10 +34,7 @@ public class User {
     @Column(unique = true)
     private String email;
     @NotNull
-    @Min(19)
-    @Max(59)
-    private int age;
-
+    private LocalDate birthDate;
     @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;
     private String address;
@@ -52,5 +51,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+    public int getAge() {
+        return Period.between(this.birthDate, LocalDate.now()).getYears();
+    }
 
 }
