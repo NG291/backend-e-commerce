@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -44,8 +45,12 @@ public class User {
     @DecimalMax(value = "100000000", message = "Salary must be less than 100000000")
     private BigDecimal salary;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
 }
