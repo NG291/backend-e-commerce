@@ -1,6 +1,6 @@
 package com.casestudy5.service.role;
 
-import com.casestudy5.model.DTO.GetNumberOfRole;
+import com.casestudy5.model.dto.GetNumberOfRole;
 import com.casestudy5.model.entity.user.Role;
 
 import java.util.Optional;

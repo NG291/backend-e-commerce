@@ -6,4 +6,5 @@ import com.casestudy5.service.IGenerateService;
 public interface IUserService extends IGenerateService<User> {
     User findByUsername(String username);
     User findByEmail(String email);
+    User findByName(String name);
 }

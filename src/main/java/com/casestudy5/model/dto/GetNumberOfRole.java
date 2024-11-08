@@ -1,4 +1,4 @@
-package com.casestudy5.model.DTO;
+package com.casestudy5.model.dto;
 
 public interface GetNumberOfRole {
     String getName();
