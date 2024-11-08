@@ -44,6 +44,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
     public int getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
     }

@@ -1,6 +1,5 @@
 package com.casestudy5.service.role;
 
-import com.casestudy5.model.dto.GetNumberOfRole;
 import com.casestudy5.model.entity.user.Role;
 import com.casestudy5.model.entity.user.RoleName;
 import com.casestudy5.repo.IRoleRepository;
@@ -13,21 +12,22 @@ import java.util.Optional;
 public class RoleService implements IRoleService {
     @Autowired
     private IRoleRepository roleRepository;
-    public RoleService(IRoleRepository roleRepository){
-        this.roleRepository= roleRepository;
-    }
-    @Override
-    public Iterable<GetNumberOfRole> getAllNumberOfRole() {
-        return roleRepository.getAllNumberOfRole();
+
+    public RoleService(IRoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
+//    @Override
+//    public Iterable<GetNumberOfRole> getAllNumberOfRole() {
+//        return roleRepository.getAllNumberOfRole();
+//    }
+
     @Override
-    public Role findByName(String name) {
+    public Optional<Role> findByName(String name) {
         try {
             RoleName roleName = RoleName.valueOf(name);
             return roleRepository.findByName(roleName);
         } catch (IllegalArgumentException e) {
-
             return null;
         }
     }

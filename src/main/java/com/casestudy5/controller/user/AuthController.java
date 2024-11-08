@@ -67,14 +67,6 @@ public class AuthController {
 
 
         Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
-//        Role role = roleService.findByName(RoleName.ROLE_USER.toString());
-
-//        if (role != null) {
-//            roles.add(role);
-//        } else {
-//            return new ResponseEntity<>("Role not found", HttpStatus.BAD_REQUEST);
-//        }
-
         user.setRoles(roles);
         userService.save(user);
 
