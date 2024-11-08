@@ -51,7 +51,12 @@ public class AuthController {
         String jwt = jwtService.generateTokenLogin(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User currentUser = userService.findByUsername(user.getUsername());
-        return ResponseEntity.ok(new JwtResponse(currentUser.getId(), jwt, userDetails.getUsername(), userDetails.getUsername(), userDetails.getAuthorities()));
+        return ResponseEntity.ok(new JwtResponse(
+                currentUser.getId(),
+                jwt,
+                userDetails.getUsername(),
+                currentUser.getName(),
+                userDetails.getAuthorities()));
     }
 
     @PostMapping("/register")
@@ -61,14 +66,14 @@ public class AuthController {
         user.setPassword(pw);
 
 
-        Set<Role> roles = new HashSet<>();
-        Role role = roleService.findByName(RoleName.ROLE_USER.toString());
+        Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
+//        Role role = roleService.findByName(RoleName.ROLE_USER.toString());
 
-        if (role != null) {
-            roles.add(role);
-        } else {
-            return new ResponseEntity<>("Role not found", HttpStatus.BAD_REQUEST);
-        }
+//        if (role != null) {
+//            roles.add(role);
+//        } else {
+//            return new ResponseEntity<>("Role not found", HttpStatus.BAD_REQUEST);
+//        }
 
         user.setRoles(roles);
         userService.save(user);

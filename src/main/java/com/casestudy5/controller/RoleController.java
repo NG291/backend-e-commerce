@@ -1,6 +1,6 @@
 package com.casestudy5.controller;
 
-import com.casestudy5.model.DTO.GetNumberOfRole;
+import com.casestudy5.model.dto.GetNumberOfRole;
 import com.casestudy5.service.role.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

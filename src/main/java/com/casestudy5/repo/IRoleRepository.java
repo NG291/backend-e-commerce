@@ -1,6 +1,6 @@
 package com.casestudy5.repo;
 
-import com.casestudy5.model.DTO.GetNumberOfRole;
+import com.casestudy5.model.dto.GetNumberOfRole;
 import com.casestudy5.model.entity.user.Role;
 import com.casestudy5.model.entity.user.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
