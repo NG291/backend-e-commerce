@@ -15,6 +15,4 @@ public class SellerRequest {
     private User user;
 
     private String status;
-
-
 }

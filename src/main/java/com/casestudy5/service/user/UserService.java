@@ -91,7 +91,7 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     public String approveSeller(Long userId) {
-        SellerRequest request = sellerRequestRepository.findById(userId)
+        SellerRequest request = sellerRequestRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Yêu cầu không tồn tại"));
 
         Optional<Role> sellerRole = roleRepository.findByName(RoleName.ROLE_SELLER);
@@ -100,21 +100,25 @@ public class UserService implements IUserService, UserDetailsService {
         }
 
         User user = request.getUser();
+
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new EntityNotFoundException("Vai trò USER không tồn tại"));
+        user.getRoles().remove(userRole);
+
+
         user.getRoles().add(sellerRole.get());
         userRepository.save(user);
 
-
         request.setStatus("APPROVED");
         sellerRequestRepository.save(request);
+
         return "Yêu cầu đã được phê duyệt.";
     }
 
     @Override
     public String rejectSeller(Long userId) {
-        SellerRequest request = sellerRequestRepository.findById(userId)
+        SellerRequest request = sellerRequestRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Yêu cầu không tồn tại"));
-
-        request.setStatus("REJECTED");
         sellerRequestRepository.save(request);
 
         return "Yêu cầu đã bị từ chối.";
