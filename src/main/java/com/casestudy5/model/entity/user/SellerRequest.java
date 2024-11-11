@@ -5,12 +5,14 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "roles")
-public class Role {
+public class SellerRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RoleName name;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    private String status;
 }
