@@ -13,6 +13,5 @@ public class SellerRequest {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
     private String status;
 }

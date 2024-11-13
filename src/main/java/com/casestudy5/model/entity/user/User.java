@@ -1,5 +1,7 @@
 package com.casestudy5.model.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -29,6 +31,7 @@ public class User {
     @Email
     @Column(unique = true)
     private String email;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyy-MM-dd")
     private LocalDate birthDate;
     @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;

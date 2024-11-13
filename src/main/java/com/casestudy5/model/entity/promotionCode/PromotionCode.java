@@ -1,7 +1,6 @@
 package com.casestudy5.model.entity.promotionCode;
 
 
-import com.casestudy5.model.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,10 +14,6 @@ public class PromotionCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
 
     private String code;
 
