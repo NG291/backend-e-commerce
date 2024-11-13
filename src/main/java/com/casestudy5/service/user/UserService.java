@@ -129,5 +129,15 @@ public class UserService implements IUserService, UserDetailsService {
         return sellerRequestRepository.findAll();
     }
 
+    @Override
+    public User findByRole(String username) {
+        return null;
+    }
+
+    @Override
+    public List<User> searchUsers(String searchTerm) {
+        return List.of();
+    }
+
 
 }

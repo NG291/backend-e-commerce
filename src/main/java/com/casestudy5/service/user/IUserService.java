@@ -20,4 +20,8 @@ public interface IUserService extends IGenerateService<User> {
     String rejectSeller(Long userId);
 
     List<SellerRequest> getAllSellerRequests();
+
+    User findByRole(String username);
+
+    List<User> searchUsers(String searchTerm);
 }

@@ -4,6 +4,7 @@ import com.casestudy5.config.UserPrinciple;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -58,4 +59,13 @@ public class JwtService {
                 .getBody()
                 .getSubject();
     }
+
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);  // Remove "Bearer " prefix
+        }
+        return null;
+    }
+
 }

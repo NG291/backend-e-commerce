@@ -13,11 +13,12 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
     @PostMapping("/request-seller-role")
     public String requestSellerRole(@RequestBody Map<String, String> requestBody) {
         String username = requestBody.get("username");
         if (username == null || username.isEmpty()) {
-            throw new IllegalArgumentException("Username không được bỏ trống.");
+            throw new IllegalArgumentException("Username cannot be null");
         }
         return userService.requestSellerRole(username);
     }

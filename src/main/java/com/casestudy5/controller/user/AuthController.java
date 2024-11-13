@@ -7,6 +7,7 @@ import com.casestudy5.model.entity.user.RoleName;
 import com.casestudy5.model.entity.user.User;
 import com.casestudy5.service.role.IRoleService;
 import com.casestudy5.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,8 +65,6 @@ public class AuthController {
 
         String pw = passwordEncoder.encode(user.getPassword());
         user.setPassword(pw);
-
-
         Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
         user.setRoles(roles);
         userService.save(user);
@@ -74,8 +73,14 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok("Đăng xuất thành công!");
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String token = jwtService.extractTokenFromRequest(request);
+        if (token != null && jwtService.validateJwtToken(token)) {
+            // Add token to a blacklist if required or perform other logout logic
+            return ResponseEntity.ok("Logged out successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+        }
     }
 
 
