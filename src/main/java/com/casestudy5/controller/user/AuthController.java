@@ -5,6 +5,7 @@ import com.casestudy5.config.service.JwtService;
 import com.casestudy5.model.entity.user.Role;
 import com.casestudy5.model.entity.user.RoleName;
 import com.casestudy5.model.entity.user.User;
+import com.casestudy5.repo.IRoleRepository;
 import com.casestudy5.service.role.IRoleService;
 import com.casestudy5.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private IRoleService roleService;
+    private IRoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -65,12 +66,14 @@ public class AuthController {
         String pw = passwordEncoder.encode(user.getPassword());
         user.setPassword(pw);
 
-
-        Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Vai trò ROLE_USER không tồn tại"));
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
         user.setRoles(roles);
-        userService.save(user);
 
-        return new ResponseEntity<>(HttpStatus.CREATED); // Use CREATED status for successful registration
+        userService.save(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/logout")

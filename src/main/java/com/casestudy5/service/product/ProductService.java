@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 public class ProductService implements IProductService {
 
@@ -40,6 +39,7 @@ public class ProductService implements IProductService {
         product.setName(productDTO.getName());
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
+        product.setQuantity(productDTO.getQuantity());
         product.setUser(user);
         product.setCategory(productDTO.getCategory());
         product = productRepository.save(product);
@@ -57,7 +57,6 @@ public class ProductService implements IProductService {
                 imageRepository.save(existingImage);
             }
         }
-
         return product;
     }
 
@@ -72,6 +71,7 @@ public class ProductService implements IProductService {
         existingProduct.setName(productDTO.getName());
         existingProduct.setDescription(productDTO.getDescription());
         existingProduct.setPrice(productDTO.getPrice());
+        existingProduct.setQuantity(productDTO.getQuantity());
         existingProduct.setCategory(productDTO.getCategory());
 
         // Xóa hết ảnh cũ
@@ -111,6 +111,7 @@ public class ProductService implements IProductService {
         productDTO.setName(product.getName());
         productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
+        productDTO.setQuantity(product.getQuantity());
         productDTO.setCategory(product.getCategory());
         productDTO.setImages(
                 product.getImages().stream()
@@ -145,6 +146,7 @@ public class ProductService implements IProductService {
         productDTO.setName(product.getName());
         productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
+        productDTO.setQuantity(product.getQuantity());
         productDTO.setCategory(product.getCategory());
 
         // Chuyển đổi danh sách Image sang ImageDTO và thêm vào ProductDTO

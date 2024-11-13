@@ -28,7 +28,7 @@ public class ProductController {
     private ProductService productServices;
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
+    public ResponseEntity<Product> addProduct(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
         Category categoryObj = categoryService.findByName(category);
         List<ImageDTO> imageDTOs = new ArrayList<>();
@@ -43,6 +43,7 @@ public class ProductController {
         productDTO.setName(name);
         productDTO.setDescription(description);
         productDTO.setPrice(price);
+        productDTO.setQuantity(quantity);
         productDTO.setCategory(categoryObj);
         productDTO.setImages(imageDTOs);
 
@@ -65,7 +66,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price,@RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
         // Lấy thông tin người dùng từ token JWT
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
 
@@ -86,6 +87,7 @@ public class ProductController {
         productDTO.setName(name);
         productDTO.setDescription(description);
         productDTO.setPrice(price);
+        productDTO.setQuantity(quantity);
         productDTO.setCategory(categoryObj);
         productDTO.setImages(imageDTOs);
 

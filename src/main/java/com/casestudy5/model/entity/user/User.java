@@ -28,10 +28,11 @@ public class User {
 
     private String name;
 
-    @Email
+    @Email(message = "Vui lòng nhập email hợp lệ.")
+    @NotBlank(message = "Email không được để trống.")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Email phải có đuôi @gmail.com")
     @Column(unique = true)
     private String email;
-//    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyy-MM-dd")
     private LocalDate birthDate;
     @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;

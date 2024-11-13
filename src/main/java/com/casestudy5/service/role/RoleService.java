@@ -17,10 +17,6 @@ public class RoleService implements IRoleService {
         this.roleRepository = roleRepository;
     }
 
-//    @Override
-//    public Iterable<GetNumberOfRole> getAllNumberOfRole() {
-//        return roleRepository.getAllNumberOfRole();
-//    }
 
     @Override
     public Optional<Role> findByName(String name) {
