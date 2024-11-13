@@ -1,7 +1,6 @@
 package com.casestudy5.model.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;

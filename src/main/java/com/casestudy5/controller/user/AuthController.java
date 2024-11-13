@@ -62,18 +62,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
+        // Kiểm tra trùng lặp username và email
+        if (userService.existsByUsername(user.getUsername())) {
+            return ResponseEntity.badRequest().body("Username đã tồn tại.");
+        }
 
-        String pw = passwordEncoder.encode(user.getPassword());
-        user.setPassword(pw);
+        if (userService.existsByEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().body("Email đã tồn tại.");
+        }
 
+        // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        // Tìm kiếm và gán vai trò cho người dùng
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Vai trò ROLE_USER không tồn tại"));
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         user.setRoles(roles);
 
+        // Lưu người dùng vào cơ sở dữ liệu
         userService.save(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);  // Trả về mã trạng thái 201 Created
     }
 
     @PostMapping("/logout")
