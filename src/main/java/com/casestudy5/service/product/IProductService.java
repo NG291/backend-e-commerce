@@ -7,9 +7,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('ROLE_SELLER')")
 
 public interface IProductService {
     Product addProduct(ProductDTO productDTO, Long userId);
+
+    Product updateProduct(Long productId, ProductDTO productDTO);
+
+    void deleteProduct(Long productId);
+
+    ProductDTO getProductById(Long productId);
+
+    List<ProductDTO> getAllProducts();
 }
 

@@ -48,9 +48,9 @@ public class Product {
     @JsonBackReference
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @Size(max =4, message = "Toi da 4 anh.")
-    @OneToMany(fetch = FetchType.LAZY, cascade= CascadeType.ALL,mappedBy = "product")
+    @JsonBackReference
+    @Size(max = 4, message = "Toi da 4 anh.")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
     private List<Image> images = new ArrayList<>();
 
 }
