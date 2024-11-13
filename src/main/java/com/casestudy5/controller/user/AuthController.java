@@ -5,6 +5,7 @@ import com.casestudy5.config.service.JwtService;
 import com.casestudy5.model.entity.user.Role;
 import com.casestudy5.model.entity.user.RoleName;
 import com.casestudy5.model.entity.user.User;
+import com.casestudy5.repo.IRoleRepository;
 import com.casestudy5.service.role.IRoleService;
 import com.casestudy5.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private IRoleService roleService;
+    private IRoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -61,16 +62,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
+        // Kiểm tra trùng lặp username và email
+        if (userService.existsByUsername(user.getUsername())) {
+            return ResponseEntity.badRequest().body("Username đã tồn tại.");
+        }
 
-        String pw = passwordEncoder.encode(user.getPassword());
-        user.setPassword(pw);
+        if (userService.existsByEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().body("Email đã tồn tại.");
+        }
 
+        // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
 
-        Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
+        // Tìm kiếm và gán vai trò cho người dùng
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Vai trò ROLE_USER không tồn tại"));
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
         user.setRoles(roles);
+
+        // Lưu người dùng vào cơ sở dữ liệu
         userService.save(user);
 
-        return new ResponseEntity<>(HttpStatus.CREATED); // Use CREATED status for successful registration
+        return new ResponseEntity<>(HttpStatus.CREATED);  // Trả về mã trạng thái 201 Created
     }
 
     @PostMapping("/logout")

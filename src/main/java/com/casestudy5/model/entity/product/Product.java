@@ -7,6 +7,8 @@ import com.casestudy5.model.entity.review.Review;
 import com.casestudy5.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
@@ -31,10 +33,12 @@ public class Product {
     private String description;
 
     @Column(precision = 10, scale = 2)
+    @Positive(message = "Giá phải lớn hơn 0")
     private BigDecimal price;
 
     private boolean isActive = true;
-
+    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
+    private int quantity;
 
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
