@@ -5,6 +5,7 @@ import com.casestudy5.repo.IEmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -72,6 +73,11 @@ public class EmployeeService implements IEmployeeService {
         } else {
             throw new IllegalArgumentException("Employee does not exist!");
         }
+    }
+
+    @Override
+    public List<Employee> searchByUsernameOrName(String query) {
+        return iEmployeeRepository.findByUsernameContainingOrNameContaining(query, query);
     }
 
 }

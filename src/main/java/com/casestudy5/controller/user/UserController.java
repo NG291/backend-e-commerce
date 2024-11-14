@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private IUserService userService;
-
-    private UserService userService;
 
     @PostMapping("/request-seller-role")
     public String requestSellerRole(@RequestBody Map<String, String> requestBody) {
@@ -29,9 +29,12 @@ public class UserController {
         }
         return userService.requestSellerRole(username);
     }
+
     @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam("searchTerm") String searchTerm) {
         List<User> users = userService.searchNameOrUsername(searchTerm);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+
 }

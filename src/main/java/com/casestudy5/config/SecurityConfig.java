@@ -24,6 +24,12 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -69,13 +75,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http.cors(httpSecurityCorsConfigurer -> {
+                    CorsConfiguration configuration = new CorsConfiguration();
+                    configuration.setAllowedOrigins(Arrays.asList("*"));
+                    configuration.setAllowedMethods(Arrays.asList("*"));
+                    configuration.setAllowedHeaders(Arrays.asList("*"));
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", configuration);
+                    httpSecurityCorsConfigurer.configurationSource(source);
+                }).csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/role").permitAll()
-                        .requestMatchers("/api/admin/**","api/users/search").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/products/all","api/products/view/**").hasAnyAuthority("ROLE_USER","ROLE_SELLER")
@@ -86,5 +100,6 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+
 }
 

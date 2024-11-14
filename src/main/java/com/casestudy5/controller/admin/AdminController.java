@@ -1,4 +1,4 @@
-package com.casestudy5.controller.user;
+package com.casestudy5.controller.admin;
 
 import com.casestudy5.model.entity.employee.Employee;
 import com.casestudy5.model.entity.user.SellerRequest;
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-//@CrossOrigin(origins = "*")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/admin")
 public class AdminController {
 
@@ -48,7 +48,7 @@ public class AdminController {
         return new ResponseEntity<>(iEmployeeService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/employees")
+    @PostMapping("/create")
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
         try {
             iEmployeeService.save(employee);
@@ -101,4 +101,13 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/employees/search")
+    public ResponseEntity<Iterable<Employee>> searchEmployees(@RequestParam("query") String query) {
+        List<Employee> employees = iEmployeeService.searchByUsernameOrName(query);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+
+
 }
