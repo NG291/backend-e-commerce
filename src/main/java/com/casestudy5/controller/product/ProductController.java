@@ -37,10 +37,11 @@ public class ProductController {
                                               Authentication authentication) {
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
         Category categoryObj = categoryService.findByName(category);
-
         List<ImageDTO> imageDTOs = new ArrayList<>();
+
         if (images != null) {
             for (MultipartFile imageFile : images) {
+                // Chuyển MultipartFile thành ImageDTO và tạo tên file ngẫu nhiên ở đây
                 ImageDTO imageDTO = convertMultipartFileToImageDTO(imageFile);
                 imageDTOs.add(imageDTO);
             }
@@ -61,17 +62,13 @@ public class ProductController {
 
     private ImageDTO convertMultipartFileToImageDTO(MultipartFile imageFile) {
         ImageDTO imageDTO = new ImageDTO();
-
-        // Generate a random filename with UUID and keep the original file extension
+        // Tạo tên file ngẫu nhiên bằng UUID và lấy phần mở rộng từ tên file gốc
         String originalFileName = imageFile.getOriginalFilename();
         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
         String randomFileName = UUID.randomUUID().toString() + fileExtension;
 
-        // Set file name and type
         imageDTO.setFileName(randomFileName);
         imageDTO.setImageType(imageFile.getContentType());
-
-        // Optionally, set the actual file in DTO if you need it during processing
         imageDTO.setFile(imageFile);
 
         return imageDTO;
@@ -83,7 +80,7 @@ public class ProductController {
         // Lấy thông tin người dùng từ token JWT
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
 
-        // Tìm danh mục theo tên
+
         Category categoryObj = categoryService.findByName(category);
 
         // Chuyển đổi các file ảnh thành ImageDTO
