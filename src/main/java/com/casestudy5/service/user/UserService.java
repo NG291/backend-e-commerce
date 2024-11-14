@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -137,6 +136,18 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public List<User> searchUsers(String searchTerm) {
         return List.of();
+    }
+
+    @Override
+    public List<User> searchNameOrUsername(String searchName) {
+        return userRepository.findByNameContainingIgnoreCaseOrUsernameContainingIgnoreCase(searchName, searchName);
+    }
+    public boolean existsByUsername(String username) {
+        return userRepository.findByUsername(username) != null;
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.findByUsername(email) != null;  // Bạn có thể sửa lại thành `findByEmail` nếu có phương thức này trong repository
     }
 
 

@@ -1,5 +1,6 @@
 package com.casestudy5.model.entity.user;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -26,7 +27,9 @@ public class User {
 
     private String name;
 
-    @Email
+    @Email(message = "Vui lòng nhập email hợp lệ.")
+    @NotBlank(message = "Email không được để trống.")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Email phải có đuôi @gmail.com")
     @Column(unique = true)
     private String email;
     private LocalDate birthDate;
