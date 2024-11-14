@@ -9,9 +9,13 @@ import com.casestudy5.repo.IImageRepository;
 import com.casestudy5.repo.IProductRepository;
 import com.casestudy5.repo.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +31,8 @@ public class ProductService implements IProductService {
 
     @Autowired
     private IUserRepository userRepository;
-
+    @Value("${upload.image}")
+    private String uploadPathImage;
     @Override
     @Transactional
     public Product addProduct(ProductDTO productDTO, Long userId) {
@@ -47,11 +52,23 @@ public class ProductService implements IProductService {
         for (ImageDTO imageDTO : productDTO.getImages()) {
             Image existingImage = imageRepository.findByFileName(imageDTO.getFileName());
             if (existingImage == null) {
-                Image image = new Image();
-                image.setImageType(imageDTO.getImageType());
-                image.setFileName(imageDTO.getFileName());
-                image.setProduct(product);
-                imageRepository.save(image);
+                // Lưu file hình ảnh vào thư mục
+                if (imageDTO.getFile() != null && !imageDTO.getFile().isEmpty()) {
+                    String filePath = Paths.get(uploadPathImage, imageDTO.getFile().getOriginalFilename()).toString();
+                    File file = new File(filePath);
+                    try {
+                        imageDTO.getFile().transferTo(file);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error saving file: " + imageDTO.getFile().getOriginalFilename(), e);
+                    }
+
+                    // Lưu thông tin vào database
+                    Image image = new Image();
+                    image.setImageType(imageDTO.getImageType());
+                    image.setFileName(imageDTO.getFile().getOriginalFilename());
+                    image.setProduct(product);
+                    imageRepository.save(image);
+                }
             } else {
                 existingImage.setProduct(product);
                 imageRepository.save(existingImage);
@@ -59,7 +76,6 @@ public class ProductService implements IProductService {
         }
         return product;
     }
-
     @Transactional
     @Override
     public Product updateProduct(Long productId, ProductDTO productDTO) {

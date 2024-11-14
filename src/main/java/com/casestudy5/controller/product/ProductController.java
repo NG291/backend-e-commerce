@@ -28,9 +28,16 @@ public class ProductController {
     private ProductService productServices;
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
+    public ResponseEntity<Product> addProduct(@RequestParam("name") String name,
+                                              @RequestParam("description") String description,
+                                              @RequestParam("price") BigDecimal price,
+                                              @RequestParam("quantity") int quantity,
+                                              @RequestParam("category") String category,
+                                              @RequestParam("images") List<MultipartFile> images,
+                                              Authentication authentication) {
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
         Category categoryObj = categoryService.findByName(category);
+
         List<ImageDTO> imageDTOs = new ArrayList<>();
         if (images != null) {
             for (MultipartFile imageFile : images) {
@@ -47,7 +54,6 @@ public class ProductController {
         productDTO.setCategory(categoryObj);
         productDTO.setImages(imageDTOs);
 
-
         Product product = productServices.addProduct(productDTO, userPrinciple.getId());
 
         return new ResponseEntity<>(product, HttpStatus.CREATED);
@@ -55,15 +61,22 @@ public class ProductController {
 
     private ImageDTO convertMultipartFileToImageDTO(MultipartFile imageFile) {
         ImageDTO imageDTO = new ImageDTO();
-        // Tạo tên file ngẫu nhiên bằng UUID và lấy phần mở rộng từ tên file gốc
+
+        // Generate a random filename with UUID and keep the original file extension
         String originalFileName = imageFile.getOriginalFilename();
         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
         String randomFileName = UUID.randomUUID().toString() + fileExtension;
 
+        // Set file name and type
         imageDTO.setFileName(randomFileName);
         imageDTO.setImageType(imageFile.getContentType());
+
+        // Optionally, set the actual file in DTO if you need it during processing
+        imageDTO.setFile(imageFile);
+
         return imageDTO;
     }
+
 
     @PutMapping("/{productId}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price,@RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
