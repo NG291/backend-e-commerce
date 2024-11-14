@@ -11,6 +11,8 @@ public interface IImageRepository extends JpaRepository<Image, Long> {
 
     Image findByFileName(String fileName);
 
+    List<Image> findByProductId(Long productId);
+
     List<Image> findByImageType(String imageType);
 
     int deleteAllByProductId(Long productId);

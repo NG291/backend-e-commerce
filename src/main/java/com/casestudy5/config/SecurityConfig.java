@@ -76,7 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/role").permitAll()
                         .requestMatchers("/api/admin/**","api/users/search").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
+                        .requestMatchers("/api/users/request-seller-role","api/users").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/products/all","api/products/view/**").hasAnyAuthority("ROLE_USER","ROLE_SELLER")
                         .requestMatchers("/api/products/**").hasAnyAuthority("ROLE_SELLER")
