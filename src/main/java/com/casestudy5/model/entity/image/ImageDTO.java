@@ -5,12 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class ImageDTO {
-    private long id; // Thêm trường id
+    private long id;
     private String imageType;
     private String fileName;
     private MultipartFile file;
-
-    public String getUrl() {
-        return "/images/" + fileName;
-    }
 }
