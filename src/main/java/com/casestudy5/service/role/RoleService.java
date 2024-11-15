@@ -17,15 +17,9 @@ public class RoleService implements IRoleService {
         this.roleRepository = roleRepository;
     }
 
-
     @Override
-    public Optional<Role> findByName(String name) {
-        try {
-            RoleName roleName = RoleName.valueOf(name);
-            return roleRepository.findByName(roleName);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+    public Optional<Role> findByName(RoleName name) {
+        return roleRepository.findByName(name);
     }
 
     @Override

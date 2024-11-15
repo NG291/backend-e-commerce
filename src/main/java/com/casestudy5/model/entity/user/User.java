@@ -8,6 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,9 +28,9 @@ public class User {
 
     private String name;
 
-    @Email(message = "Vui lòng nhập email hợp lệ.")
-    @NotBlank(message = "Email không được để trống.")
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Email phải có đuôi @gmail.com")
+    @Email(message = "Email must be valid!")
+    @NotBlank(message = "Email cannot be blank!")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Must be @gmail.com")
     @Column(unique = true)
     private String email;
     private LocalDate birthDate;
@@ -46,9 +47,13 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
-    public int getAge() {
+    public Integer getAge() {
+        if (this.birthDate == null) {
+            return null; // Or return a default value if appropriate, like 0
+        }
         return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
+
 }
