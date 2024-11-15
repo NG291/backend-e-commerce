@@ -33,14 +33,8 @@ public class User {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Must be @gmail.com")
     @Column(unique = true)
     private String email;
-    private LocalDate birthDate;
-    @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;
     private String address;
-    @DecimalMin(value = "0.01", message = "Salary must be greater than 0")
-    @DecimalMax(value = "100000000", message = "Salary must be less than 100000000")
-    private BigDecimal salary;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -49,11 +43,6 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    public Integer getAge() {
-        if (this.birthDate == null) {
-            return null; // Or return a default value if appropriate, like 0
-        }
-        return Period.between(this.birthDate, LocalDate.now()).getYears();
-    }
+
 
 }
