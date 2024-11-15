@@ -53,9 +53,10 @@ public class Employee {
     @Column(nullable = false)
     private String address;
 
-
-    public int getAge() {
+    public Integer getAge() {
+        if (this.birthDate == null) {
+            return null; // Or return a default value if appropriate, like 0
+        }
         return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
-
 }
