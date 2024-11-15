@@ -9,11 +9,16 @@ import com.casestudy5.repo.IImageRepository;
 import com.casestudy5.repo.IProductRepository;
 import com.casestudy5.repo.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +32,8 @@ public class ProductService implements IProductService {
 
     @Autowired
     private IUserRepository userRepository;
-
+    @Value("${upload.image}")
+    private String uploadPathImage;
     @Override
     @Transactional
     public Product addProduct(ProductDTO productDTO, Long userId) {
@@ -42,21 +48,39 @@ public class ProductService implements IProductService {
         product.setQuantity(productDTO.getQuantity());
         product.setUser(user);
         product.setCategory(productDTO.getCategory());
+
         product = productRepository.save(product);
 
+        // Lưu các ảnh vào thư mục và cơ sở dữ liệu
         for (ImageDTO imageDTO : productDTO.getImages()) {
+
             Image existingImage = imageRepository.findByFileName(imageDTO.getFileName());
+
             if (existingImage == null) {
-                Image image = new Image();
-                image.setImageType(imageDTO.getImageType());
-                image.setFileName(imageDTO.getFileName());
-                image.setProduct(product);
-                imageRepository.save(image);
+                if (imageDTO.getFile() != null && !imageDTO.getFile().isEmpty()) {
+
+                    // Đường dẫn thư mục lưu trữ ảnh
+                    String filePath = Paths.get(uploadPathImage, imageDTO.getFileName()).toString();
+                    File file = new File(filePath);
+
+                    try {
+                        imageDTO.getFile().transferTo(file);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error saving file: " + imageDTO.getFileName(), e);
+                    }
+
+                    Image image = new Image();
+                    image.setImageType(imageDTO.getImageType());
+                    image.setFileName(imageDTO.getFileName());
+                    image.setProduct(product);
+                    imageRepository.save(image);
+                }
             } else {
                 existingImage.setProduct(product);
                 imageRepository.save(existingImage);
             }
         }
+
         return product;
     }
 
@@ -67,26 +91,63 @@ public class ProductService implements IProductService {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Cập nhật các thuộc tính của sản phẩm
         existingProduct.setName(productDTO.getName());
         existingProduct.setDescription(productDTO.getDescription());
         existingProduct.setPrice(productDTO.getPrice());
         existingProduct.setQuantity(productDTO.getQuantity());
         existingProduct.setCategory(productDTO.getCategory());
 
+        List<Image> oldImages = imageRepository.findByProductId(existingProduct.getId());
+
+        // Xóa hết ảnh cũ trong cơ sở dữ liệu và xóa file trong thư mục
+        for (Image oldImage : oldImages) {
+            // Tạo đường dẫn tới file ảnh cũ trong thư mục
+            String filePath = Paths.get(uploadPathImage, oldImage.getFileName()).toString();
+            File file = new File(filePath);
+
+            // Kiểm tra và xóa file nếu tồn tại
+            if (file.exists()) {
+                if (!file.delete()) {
+                    throw new RuntimeException("Error deleting file: " + filePath);
+                }
+            }
+        }
+
         // Xóa hết ảnh cũ
         imageRepository.deleteAllByProductId(existingProduct.getId());
+
+
         // Cập nhật ảnh nếu có thay đổi
         List<Image> images = new ArrayList<>();
         for (ImageDTO imageDTO : productDTO.getImages()) {
-            // Nếu ảnh chưa tồn tại, tạo ảnh mới và liên kết với sản phẩm
             Image image = new Image();
             image.setImageType(imageDTO.getImageType());
             image.setFileName(imageDTO.getFileName());
-            image.setProduct(existingProduct); // Liên kết ảnh với sản phẩm
+            image.setProduct(existingProduct);
+
+            // Lưu ảnh vào thư mục trên máy chủ
+            try {
+                // Đường dẫn tới thư mục lưu ảnh
+                String filePath = Paths.get(uploadPathImage, imageDTO.getFileName()).toString();
+                File file = new File(filePath);
+
+                // Kiểm tra nếu thư mục chưa tồn tại, tạo mới
+                File parentDir = file.getParentFile();
+                if (!parentDir.exists()) {
+                    parentDir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
+                }
+
+                // Lưu file vào thư mục
+                imageDTO.getFile().transferTo(file); // Lưu file vào đường dẫn đã chỉ định
+            } catch (IOException e) {
+                throw new RuntimeException("Error saving image to server: " + imageDTO.getFileName(), e);
+            }
+
             images.add(image);
         }
+
         imageRepository.saveAll(images);
+
 
         return productRepository.save(existingProduct);
     }
@@ -149,7 +210,7 @@ public class ProductService implements IProductService {
         productDTO.setQuantity(product.getQuantity());
         productDTO.setCategory(product.getCategory());
 
-        // Chuyển đổi danh sách Image sang ImageDTO và thêm vào ProductDTO
+
         List<ImageDTO> imageDTOs = product.getImages().stream()
                 .map(this::convertImageToDTO)
                 .collect(Collectors.toList());

@@ -66,21 +66,21 @@ public class AdminController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/employees/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        Optional<Employee> existingEmployee = iEmployeeService.findById(id);
-        if (existingEmployee.isPresent()) {
-            employee.setId(id);
-            try {
-                iEmployeeService.save(employee);
-                return new ResponseEntity<>(employee, HttpStatus.OK);
-            } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+//    @PutMapping("/employees/{id}")
+//    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+//        Optional<Employee> existingEmployee = iEmployeeService.findById(id);
+//        if (existingEmployee.isPresent()) {
+//            employee.setId(id);
+//            try {
+//                iEmployeeService.save(employee);
+//                return new ResponseEntity<>(employee, HttpStatus.OK);
+//            } catch (IllegalArgumentException e) {
+//                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//            }
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//    }
 
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable Long id) {

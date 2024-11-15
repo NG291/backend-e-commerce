@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,11 +44,7 @@ public class Employee {
     @NotBlank(message = "Name is required")
     @Column(nullable = false)
     private String name;
-
-    @Positive(message = "Age must be greater than 18")
-    @Column(nullable = false)
-    private int age;
-
+    private LocalDate birthDate;
     @NotBlank(message = "Phone is required")
     @Column(nullable = false)
     private String phone;
@@ -54,9 +53,9 @@ public class Employee {
     @Column(nullable = false)
     private String address;
 
-    @Positive(message = "Salary must be greater than 0")
-    @Column(nullable = false)
-    private double salary;
 
-    // Add any additional methods or validation logic if needed
+    public int getAge() {
+        return Period.between(this.birthDate, LocalDate.now()).getYears();
+    }
+
 }

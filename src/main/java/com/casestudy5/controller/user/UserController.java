@@ -2,7 +2,7 @@ package com.casestudy5.controller.user;
 
 
 import com.casestudy5.model.entity.user.User;
-import com.casestudy5.service.user.IUserService;
+import com.casestudy5.model.entity.user.UserDTO;
 import com.casestudy5.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,12 +14,16 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
-//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/users")
 public class UserController {
-
     @Autowired
-    private IUserService userService;
+    private UserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 
 
     @PostMapping("/request-seller-role")
@@ -38,6 +42,5 @@ public class UserController {
         List<User> users = userService.searchNameOrUsername(searchTerm);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
-
 
 }

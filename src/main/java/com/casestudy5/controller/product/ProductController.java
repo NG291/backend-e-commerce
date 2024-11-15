@@ -21,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     private ICategoryService categoryService;
@@ -28,12 +29,20 @@ public class ProductController {
     private ProductService productServices;
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
+    public ResponseEntity<Product> addProduct(@RequestParam("name") String name,
+                                              @RequestParam("description") String description,
+                                              @RequestParam("price") BigDecimal price,
+                                              @RequestParam("quantity") int quantity,
+                                              @RequestParam("category") String category,
+                                              @RequestParam("images") List<MultipartFile> images,
+                                              Authentication authentication) {
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
         Category categoryObj = categoryService.findByName(category);
         List<ImageDTO> imageDTOs = new ArrayList<>();
+
         if (images != null) {
             for (MultipartFile imageFile : images) {
+                // Chuyển MultipartFile thành ImageDTO và tạo tên file ngẫu nhiên ở đây
                 ImageDTO imageDTO = convertMultipartFileToImageDTO(imageFile);
                 imageDTOs.add(imageDTO);
             }
@@ -46,7 +55,6 @@ public class ProductController {
         productDTO.setQuantity(quantity);
         productDTO.setCategory(categoryObj);
         productDTO.setImages(imageDTOs);
-
 
         Product product = productServices.addProduct(productDTO, userPrinciple.getId());
 
@@ -62,15 +70,18 @@ public class ProductController {
 
         imageDTO.setFileName(randomFileName);
         imageDTO.setImageType(imageFile.getContentType());
+        imageDTO.setFile(imageFile);
+
         return imageDTO;
     }
+
 
     @PutMapping("/{productId}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price,@RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
         // Lấy thông tin người dùng từ token JWT
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
 
-        // Tìm danh mục theo tên
+
         Category categoryObj = categoryService.findByName(category);
 
         // Chuyển đổi các file ảnh thành ImageDTO
