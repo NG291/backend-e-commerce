@@ -210,7 +210,7 @@ public class ProductService implements IProductService {
         productDTO.setQuantity(product.getQuantity());
         productDTO.setCategory(product.getCategory());
 
-        // Chuyển đổi danh sách Image sang ImageDTO và thêm vào ProductDTO
+
         List<ImageDTO> imageDTOs = product.getImages().stream()
                 .map(this::convertImageToDTO)
                 .collect(Collectors.toList());

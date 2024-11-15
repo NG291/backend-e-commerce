@@ -32,7 +32,6 @@ public class User {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Email phải có đuôi @gmail.com")
     @Column(unique = true)
     private String email;
-    private LocalDate birthDate;
     @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;
     private String address;
@@ -44,7 +43,4 @@ public class User {
     )
     private Set<Role> roles;
 
-    public int getAge() {
-        return Period.between(this.birthDate, LocalDate.now()).getYears();
-    }
 }
