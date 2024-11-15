@@ -44,9 +44,7 @@ public class Employee {
     @NotBlank(message = "Name is required")
     @Column(nullable = false)
     private String name;
-
     private LocalDate birthDate;
-
     @NotBlank(message = "Phone is required")
     @Column(nullable = false)
     private String phone;
@@ -55,9 +53,6 @@ public class Employee {
     @Column(nullable = false)
     private String address;
 
-    @Positive(message = "Salary must be greater than 0")
-    @Column(nullable = false)
-    private double salary;
 
     public int getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
