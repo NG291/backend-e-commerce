@@ -2,6 +2,7 @@ package com.casestudy5.controller.user;
 
 
 import com.casestudy5.model.entity.user.User;
+import com.casestudy5.model.entity.user.UserDTO;
 import com.casestudy5.service.user.IUserService;
 import com.casestudy5.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,12 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 
     @PostMapping("/request-seller-role")
     public String requestSellerRole(@RequestBody Map<String, String> requestBody) {

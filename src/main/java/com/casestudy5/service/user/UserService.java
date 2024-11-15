@@ -1,10 +1,7 @@
 package com.casestudy5.service.user;
 
 import com.casestudy5.config.UserPrinciple;
-import com.casestudy5.model.entity.user.Role;
-import com.casestudy5.model.entity.user.RoleName;
-import com.casestudy5.model.entity.user.SellerRequest;
-import com.casestudy5.model.entity.user.User;
+import com.casestudy5.model.entity.user.*;
 import com.casestudy5.repo.IRoleRepository;
 import com.casestudy5.repo.ISellerRequestRepository;
 import com.casestudy5.repo.IUserRepository;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService, UserDetailsService {
@@ -151,5 +149,25 @@ public class UserService implements IUserService, UserDetailsService {
         return userRepository.findByUsername(email) != null;  // Bạn có thể sửa lại thành `findByEmail` nếu có phương thức này trong repository
     }
 
-
+    // Phương thức chuyển đổi từ user sang UserDTO
+    public UserDTO convertToUserDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setAddress(user.getAddress());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRoles(user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet()));
+        return dto;
+    }
+  // Phương thức lấy danh sách người dùng
+  public List<UserDTO> getAllUsers() {
+      List<User> users = userRepository.findAll();
+      return users.stream()
+              .map(this::convertToUserDTO)
+              .collect(Collectors.toList());
+  }
 }
