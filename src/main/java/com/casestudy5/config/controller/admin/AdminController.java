@@ -2,6 +2,7 @@ package com.casestudy5.config.controller.admin;
 
 import com.casestudy5.model.entity.employee.Employee;
 import com.casestudy5.model.entity.user.SellerRequest;
+import com.casestudy5.model.entity.user.User;
 import com.casestudy5.service.employee.IEmployeeService;
 import com.casestudy5.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,12 @@ public class AdminController {
     public ResponseEntity<Iterable<Employee>> searchEmployees(@RequestParam("query") String query) {
         List<Employee> employees = iEmployeeService.searchByUsernameOrName(query);
         return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<Iterable<User>> getAllUsers() {
+        Iterable<User> users = userService.findAll();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
 

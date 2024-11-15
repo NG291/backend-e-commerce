@@ -25,6 +25,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+
     @PostMapping("/request-seller-role")
     public String requestSellerRole(@RequestBody Map<String, String> requestBody) {
         String username = requestBody.get("username");
@@ -33,6 +34,8 @@ public class UserController {
         }
         return userService.requestSellerRole(username);
     }
+
+
 
     @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam("searchTerm") String searchTerm) {
