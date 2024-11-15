@@ -36,10 +36,6 @@ public class User {
     @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;
     private String address;
-    @DecimalMin(value = "0.01", message = "Salary must be greater than 0")
-    @DecimalMax(value = "100000000", message = "Salary must be less than 100000000")
-    private BigDecimal salary;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
