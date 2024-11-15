@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -30,13 +32,16 @@ public class UserController {
     public String requestSellerRole(@RequestBody Map<String, String> requestBody) {
         String username = requestBody.get("username");
         if (username == null || username.isEmpty()) {
-            throw new IllegalArgumentException("Username không được bỏ trống.");
+            throw new IllegalArgumentException("Username cannot be null");
         }
         return userService.requestSellerRole(username);
     }
+
     @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam("searchTerm") String searchTerm) {
         List<User> users = userService.searchNameOrUsername(searchTerm);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+
 }

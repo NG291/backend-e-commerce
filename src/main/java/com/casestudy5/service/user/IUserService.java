@@ -21,5 +21,9 @@ public interface IUserService extends IGenerateService<User> {
 
     List<SellerRequest> getAllSellerRequests();
 
+    User findByRole(String username);
+
+    List<User> searchUsers(String searchTerm);
+
     List<User> searchNameOrUsername(String searchName);
 }

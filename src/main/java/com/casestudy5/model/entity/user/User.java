@@ -22,7 +22,7 @@ public class User {
     @Column(unique = true)
     private String username;
 
-    @Size(min = 8)
+    @Size(min = 4)
     private String password;
 
     private String name;
