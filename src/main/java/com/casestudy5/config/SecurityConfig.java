@@ -90,6 +90,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/role").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
 
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
