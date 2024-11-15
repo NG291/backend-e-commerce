@@ -1,4 +1,4 @@
-package com.casestudy5.controller.product;
+package com.casestudy5.config.controller.product;
 
 import com.casestudy5.config.UserPrinciple;
 import com.casestudy5.model.entity.image.ImageDTO;
@@ -63,7 +63,6 @@ public class ProductController {
 
     private ImageDTO convertMultipartFileToImageDTO(MultipartFile imageFile) {
         ImageDTO imageDTO = new ImageDTO();
-        // Tạo tên file ngẫu nhiên bằng UUID và lấy phần mở rộng từ tên file gốc
         String originalFileName = imageFile.getOriginalFilename();
         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
         String randomFileName = UUID.randomUUID().toString() + fileExtension;

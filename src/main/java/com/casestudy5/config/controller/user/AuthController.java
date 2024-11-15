@@ -1,4 +1,4 @@
-package com.casestudy5.controller.user;
+package com.casestudy5.config.controller.user;
 
 import com.casestudy5.config.service.JwtResponse;
 import com.casestudy5.config.service.JwtService;
@@ -65,12 +65,19 @@ public class AuthController {
 
         String pw = passwordEncoder.encode(user.getPassword());
         user.setPassword(pw);
-        Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
+
+        Role userRole = roleService.findByName(RoleName.ROLE_USER.name())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
         user.setRoles(roles);
+
         userService.save(user);
 
-        return new ResponseEntity<>(HttpStatus.CREATED); // Use CREATED status for successful registration
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {

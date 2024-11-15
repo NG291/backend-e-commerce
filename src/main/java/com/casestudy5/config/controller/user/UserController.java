@@ -1,4 +1,4 @@
-package com.casestudy5.controller.user;
+package com.casestudy5.config.controller.user;
 
 
 import com.casestudy5.model.entity.user.User;
