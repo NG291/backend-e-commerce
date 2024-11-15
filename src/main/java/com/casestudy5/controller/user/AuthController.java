@@ -5,9 +5,9 @@ import com.casestudy5.config.service.JwtService;
 import com.casestudy5.model.entity.user.Role;
 import com.casestudy5.model.entity.user.RoleName;
 import com.casestudy5.model.entity.user.User;
-import com.casestudy5.repo.IRoleRepository;
 import com.casestudy5.service.role.IRoleService;
 import com.casestudy5.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private IRoleRepository roleRepository;
+    private IRoleService roleService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -62,35 +62,25 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        // Kiểm tra trùng lặp username và email
-        if (userService.existsByUsername(user.getUsername())) {
-            return ResponseEntity.badRequest().body("Username đã tồn tại.");
-        }
 
-        if (userService.existsByEmail(user.getEmail())) {
-            return ResponseEntity.badRequest().body("Email đã tồn tại.");
-        }
-
-        // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-
-        // Tìm kiếm và gán vai trò cho người dùng
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Vai trò ROLE_USER không tồn tại"));
-        Set<Role> roles = new HashSet<>();
-        roles.add(userRole);
+        String pw = passwordEncoder.encode(user.getPassword());
+        user.setPassword(pw);
+        Set<Role> roles = new HashSet<>(RoleName.ROLE_USER.ordinal());
         user.setRoles(roles);
-
-        // Lưu người dùng vào cơ sở dữ liệu
         userService.save(user);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);  // Trả về mã trạng thái 201 Created
+        return new ResponseEntity<>(HttpStatus.CREATED); // Use CREATED status for successful registration
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok("Đăng xuất thành công!");
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String token = jwtService.extractTokenFromRequest(request);
+        if (token != null && jwtService.validateJwtToken(token)) {
+            // Add token to a blacklist if required or perform other logout logic
+            return ResponseEntity.ok("Logged out successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+        }
     }
 
 
