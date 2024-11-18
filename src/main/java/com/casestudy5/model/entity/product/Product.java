@@ -33,11 +33,11 @@ public class Product {
     private String description;
 
     @Column(precision = 10, scale = 2)
-    @Positive(message = "Giá phải lớn hơn 0")
+    @Positive(message = "Must be bigger than 0!")
     private BigDecimal price;
 
     private boolean isActive = true;
-    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
+    @Min(value = 1, message = "Must be bigger than 0!")
     private int quantity;
 
     @OneToMany(mappedBy = "product")
@@ -53,7 +53,7 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @JsonBackReference
-    @Size(max = 4, message = "Toi da 4 anh.")
+    @Size(max = 4, message = "Max 4 photos!")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
     private List<Image> images = new ArrayList<>();
 

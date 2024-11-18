@@ -75,7 +75,7 @@ public class UserService implements IUserService, UserDetailsService {
         }
 
         if (sellerRequestRepository.existsByUser(user)) {
-            return "Bạn đã gửi yêu cầu rồi.";
+            return "You already sent request!";
         }
 
         SellerRequest request = new SellerRequest();
@@ -83,23 +83,23 @@ public class UserService implements IUserService, UserDetailsService {
         request.setStatus("PENDING");
         sellerRequestRepository.save(request);
 
-        return "Yêu cầu của bạn đã được gửi.";
+        return "Request sent!";
     }
 
     @Override
     public String approveSeller(Long userId) {
         SellerRequest request = sellerRequestRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Yêu cầu không tồn tại"));
+                .orElseThrow(() -> new EntityNotFoundException("Request does not exist!"));
 
         Optional<Role> sellerRole = roleRepository.findByName(RoleName.ROLE_SELLER);
         if (sellerRole.isEmpty()) {
-            throw new EntityNotFoundException("Vai trò SELLER không tồn tại");
+            throw new EntityNotFoundException("ROLE SELLER does not exist!");
         }
 
         User user = request.getUser();
 
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new EntityNotFoundException("Vai trò USER không tồn tại"));
+                .orElseThrow(() -> new EntityNotFoundException("ROLE SELLER does not exist!"));
         user.getRoles().remove(userRole);
 
 
@@ -109,7 +109,7 @@ public class UserService implements IUserService, UserDetailsService {
         request.setStatus("APPROVED");
         sellerRequestRepository.save(request);
 
-        return "Yêu cầu đã được phê duyệt.";
+        return "Request approved!";
     }
 
     @Override
@@ -146,7 +146,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     public boolean existsByEmail(String email) {
-        return userRepository.findByUsername(email) != null;  // Bạn có thể sửa lại thành `findByEmail` nếu có phương thức này trong repository
+        return userRepository.findByUsername(email) != null;  // có thể sửa lại thành `findByEmail` nếu có phương thức này trong repository
     }
 
     // Phương thức chuyển đổi từ user sang UserDTO
