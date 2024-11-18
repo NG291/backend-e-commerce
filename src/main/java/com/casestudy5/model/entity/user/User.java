@@ -33,10 +33,8 @@ public class User {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Must be @gmail.com")
     @Column(unique = true)
     private String email;
-    @Pattern(regexp = "^(0[0-9]{9})$")
     private String phoneNumber;
     private String address;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -44,9 +42,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
-
-//    @Column(name = "seller_request", nullable = false)
-//    private boolean sellerRequest = false;
 
 
 

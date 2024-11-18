@@ -1,4 +1,4 @@
-package com.casestudy5.controller.admin;
+package com.casestudy5.config.controller.admin;
 
 import com.casestudy5.model.entity.employee.Employee;
 import com.casestudy5.model.entity.user.SellerRequest;
