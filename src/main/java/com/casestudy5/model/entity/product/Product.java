@@ -1,7 +1,6 @@
 package com.casestudy5.model.entity.product;
 
 import com.casestudy5.model.entity.image.Image;
-import com.casestudy5.model.entity.review.order.Order;
 import com.casestudy5.model.entity.review.Review;
 
 import com.casestudy5.model.entity.user.User;
@@ -16,7 +15,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
