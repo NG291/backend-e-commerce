@@ -1,4 +1,4 @@
-package com.casestudy5.service.product;
+package com.casestudy5.service.role.product;
 
 import com.casestudy5.model.entity.image.Image;
 import com.casestudy5.model.entity.image.ImageDTO;
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
