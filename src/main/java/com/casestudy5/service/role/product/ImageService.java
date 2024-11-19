@@ -1,4 +1,4 @@
-package com.casestudy5.service.product;
+package com.casestudy5.service.role.product;
 
 import com.casestudy5.model.entity.image.Image;
 import com.casestudy5.model.entity.image.ImageDTO;
