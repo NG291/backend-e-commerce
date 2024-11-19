@@ -15,7 +15,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 
 @Entity
@@ -38,10 +38,6 @@ public class Product {
     private boolean isActive = true;
     @Min(value = 1, message = "Must be bigger than 0!")
     private int quantity;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "prod    uct_id")
-    private List<Order> orders;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

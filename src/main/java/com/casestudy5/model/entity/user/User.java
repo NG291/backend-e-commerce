@@ -1,6 +1,10 @@
 package com.casestudy5.model.entity.user;
 
 
+import com.casestudy5.model.entity.cart.CartItem;
+import com.casestudy5.model.entity.cart.Order;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -9,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +40,14 @@ public class User {
     private String email;
     private String phoneNumber;
     private String address;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<CartItem> cartItems;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -42,7 +55,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
-
 
 
 }

@@ -2,9 +2,11 @@ package com.casestudy5.model.entity.cart;
 
 import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -17,14 +19,25 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
     private double totalAmount;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItems;
+    private LocalDateTime orderDate;
+
+    @PrePersist
+    public void prePersist() {
+        if (orderDate == null) {
+            orderDate = LocalDateTime.now();
+        }
+    }
 }
+
 
