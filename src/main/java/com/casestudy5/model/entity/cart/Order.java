@@ -1,5 +1,6 @@
 package com.casestudy5.model.entity.cart;
 
+import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,6 +23,10 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
 }
 

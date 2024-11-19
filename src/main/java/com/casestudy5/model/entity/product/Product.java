@@ -1,5 +1,6 @@
 package com.casestudy5.model.entity.product;
 
+import com.casestudy5.model.entity.cart.Order;
 import com.casestudy5.model.entity.image.Image;
 import com.casestudy5.model.entity.review.Review;
 
@@ -41,7 +42,8 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany
+    @JoinColumn(name = "order_id")
     private List<Order> orders;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
