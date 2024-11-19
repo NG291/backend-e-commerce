@@ -1,4 +1,4 @@
-package com.casestudy5.config.controller.user;
+package com.casestudy5.controller.user;
 
 import com.casestudy5.config.service.JwtResponse;
 import com.casestudy5.config.service.JwtService;
