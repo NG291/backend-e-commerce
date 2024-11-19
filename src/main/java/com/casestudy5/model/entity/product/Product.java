@@ -1,8 +1,7 @@
 package com.casestudy5.model.entity.product;
 
+import com.casestudy5.model.entity.cart.Order;
 import com.casestudy5.model.entity.image.Image;
-import com.casestudy5.model.entity.review.order.Order;
-import com.casestudy5.model.entity.review.Review;
 
 import com.casestudy5.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -40,10 +39,8 @@ public class Product {
     @Min(value = 1, message = "Must be bigger than 0!")
     private int quantity;
 
-    @OneToMany(mappedBy = "product")
-    private List<Review> reviews;
-
-    @OneToMany(mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "prod    uct_id")
     private List<Order> orders;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
