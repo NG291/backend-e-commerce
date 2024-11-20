@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.UUID;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -73,37 +74,37 @@ public class ProductController {
     }
 
 
-        @PutMapping("/{productId}")
-        public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price,@RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
-            // Lấy thông tin người dùng từ token JWT
-            UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+    @PutMapping("/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
+        // Lấy thông tin người dùng từ token JWT
+        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
 
 
-            Category categoryObj = categoryService.findByName(category);
+        Category categoryObj = categoryService.findByName(category);
 
-            // Chuyển đổi các file ảnh thành ImageDTO
-            List<ImageDTO> imageDTOs = new ArrayList<>();
-            if (images != null) {
-                for (MultipartFile imageFile : images) {
-                    ImageDTO imageDTO = convertMultipartFileToImageDTO(imageFile);
-                    imageDTOs.add(imageDTO);
-                }
+        // Chuyển đổi các file ảnh thành ImageDTO
+        List<ImageDTO> imageDTOs = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile imageFile : images) {
+                ImageDTO imageDTO = convertMultipartFileToImageDTO(imageFile);
+                imageDTOs.add(imageDTO);
             }
-
-            // Tạo DTO cho sản phẩm
-            ProductDTO productDTO = new ProductDTO();
-            productDTO.setName(name);
-            productDTO.setDescription(description);
-            productDTO.setPrice(price);
-            productDTO.setQuantity(quantity);
-            productDTO.setCategory(categoryObj);
-            productDTO.setImages(imageDTOs);
-
-            // Cập nhật sản phẩm trong service
-            Product updatedProduct = productServices.updateProduct(productId, productDTO);
-
-            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
         }
+
+        // Tạo DTO cho sản phẩm
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setName(name);
+        productDTO.setDescription(description);
+        productDTO.setPrice(price);
+        productDTO.setQuantity(quantity);
+        productDTO.setCategory(categoryObj);
+        productDTO.setImages(imageDTOs);
+
+        // Cập nhật sản phẩm trong service
+        Product updatedProduct = productServices.updateProduct(productId, productDTO);
+
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
