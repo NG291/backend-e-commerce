@@ -2,9 +2,10 @@ package com.casestudy5.model.entity.cart;
 
 import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
+
 
 @Data
 @Entity
@@ -16,6 +17,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne
@@ -23,5 +25,6 @@ public class CartItem {
     private Product product;
 
     private int quantity;
+
 }
 

@@ -6,11 +6,12 @@ import com.casestudy5.model.entity.product.Category;
 import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.product.ProductDTO;
 import com.casestudy5.service.category.ICategoryService;
-import com.casestudy5.service.role.product.ProductService;
+import com.casestudy5.service.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,7 +74,6 @@ public class ProductController {
         return imageDTO;
     }
 
-
     @PutMapping("/{productId}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") BigDecimal price, @RequestParam("quantity") int quantity, @RequestParam("category") String category, @RequestParam("images") List<MultipartFile> images, Authentication authentication) {
         // Lấy thông tin người dùng từ token JWT
@@ -116,6 +116,21 @@ public class ProductController {
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) {
         ProductDTO productDTO = productServices.getProductById(productId);
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
+    }
+    @GetMapping("/seller")
+    public ResponseEntity<List<ProductDTO>> getProductsForSeller() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+        Long userId = userPrinciple.getId();
+
+        try {
+            List<ProductDTO> products = productServices.getProductsBySeller(userId);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 

@@ -1,8 +1,11 @@
 package com.casestudy5.model.entity.cart;
 
 import com.casestudy5.model.entity.product.Product;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -13,14 +16,15 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
     private int quantity;
-    private double price;
+    private BigDecimal price;
 
 }
+

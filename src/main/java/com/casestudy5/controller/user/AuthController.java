@@ -5,19 +5,23 @@ import com.casestudy5.config.service.JwtService;
 import com.casestudy5.model.entity.user.Role;
 import com.casestudy5.model.entity.user.RoleName;
 import com.casestudy5.model.entity.user.User;
+import com.casestudy5.model.entity.user.UserDTO;
 import com.casestudy5.service.role.IRoleService;
 import com.casestudy5.service.role.RoleService;
 import com.casestudy5.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -45,28 +49,54 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+    public ResponseEntity<?> login(@RequestBody UserDTO loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtService.generateTokenLogin(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User currentUser = userService.findByUsername(user.getUsername());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtService.generateTokenLogin(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User currentUser = userService.findByUsername(loginRequest.getUsername());
 
-        return ResponseEntity.ok(new JwtResponse(
-                currentUser.getId(),
-                jwt,
-                userDetails.getUsername(),
-                currentUser.getName(),
-                userDetails.getAuthorities()));
+            return ResponseEntity.ok(new JwtResponse(
+                    currentUser.getId(),
+                    jwt,
+                    userDetails.getUsername(),
+                    currentUser.getName(),
+                    userDetails.getAuthorities()));
+
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+        }
     }
 
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+        // Kiểm tra lỗi validation
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
+        }
+
+        // Kiểm tra xem tên người dùng đã tồn tại chưa
+        if (userService.existsByUsername(userDTO.getUsername())) {
+            return new ResponseEntity<>("Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST);
+        }
+
+        // Kiểm tra xem email đã tồn tại chưa
+        if (userService.existsByEmail(userDTO.getEmail())) {
+            return new ResponseEntity<>("Email đã tồn tại!", HttpStatus.BAD_REQUEST);
+        }
+
+        // Tạo đối tượng User từ UserDTO
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+
         // Mã hóa mật khẩu
-        String pw = passwordEncoder.encode(user.getPassword());
-        user.setPassword(pw);
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        user.setPassword(encodedPassword);
 
         // Lấy vai trò ROLE_USER từ cơ sở dữ liệu
         Role userRole = roleService.findByName(RoleName.ROLE_USER)
@@ -83,6 +113,7 @@ public class AuthController {
         // Trả về phản hồi với mã trạng thái CREATED (Đã tạo thành công)
         return new ResponseEntity<>(HttpStatus.CREATED); // Trả về trạng thái CREATED cho việc đăng ký thành công
     }
+
 
 
     @PostMapping("/logout")

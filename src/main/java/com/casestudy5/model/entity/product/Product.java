@@ -2,7 +2,6 @@ package com.casestudy5.model.entity.product;
 
 import com.casestudy5.model.entity.cart.Order;
 import com.casestudy5.model.entity.image.Image;
-import com.casestudy5.model.entity.review.Review;
 
 import com.casestudy5.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -16,6 +15,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -38,13 +38,6 @@ public class Product {
     private boolean isActive = true;
     @Min(value = 1, message = "Must be bigger than 0!")
     private int quantity;
-
-    @OneToMany(mappedBy = "product")
-    private List<Review> reviews;
-
-    @OneToMany
-    @JoinColumn(name = "order_id")
-    private List<Order> orders;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -53,7 +46,6 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @JsonBackReference
-//    @Size(max = 4, message = "Max 4 photos!")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
     private List<Image> images = new ArrayList<>();
 
