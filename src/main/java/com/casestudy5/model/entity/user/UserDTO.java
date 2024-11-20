@@ -14,7 +14,6 @@ import java.util.Set;
 @Setter
 public class UserDTO {
     private Long id;
-
     @NotBlank(message = "Tên người dùng không được để trống")
     @Size(min = 1, max = 50, message = "Tên người dùng phải có độ dài từ 1 đến 50 ký tự")
     private String username;

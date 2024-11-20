@@ -15,7 +15,7 @@ import java.util.List;
 public class UserPrinciple implements UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
-    private final Long id; // Thêm trường id để lưu id của user
+    private final Long id;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> roles;

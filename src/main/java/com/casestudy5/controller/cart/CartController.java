@@ -22,10 +22,11 @@ public class CartController {
     private UserService userService;
 
     @PostMapping("/add/{productId}")
-    public ResponseEntity<?> addToCart(@PathVariable Long productId, @RequestParam int quantity, Principal principal) {
+    public ResponseEntity<?> addToCart(@PathVariable Long productId,
+                                       @RequestParam int quantity,
+                                       Principal principal) {
         try {
             User user = getUserFromPrincipal(principal);
-
             cartItemService.addToCart(user, productId, quantity);
             return ResponseEntity.ok("Product added to cart");
         } catch (Exception e) {
@@ -49,7 +50,9 @@ public class CartController {
         }
     }
     @PutMapping("/update/{productId}")
-    public ResponseEntity<?> updateCart(@PathVariable Long productId, @RequestParam int quantity, Principal principal) {
+    public ResponseEntity<?> updateCart(@PathVariable Long productId,
+                                        @RequestParam int quantity,
+                                        Principal principal) {
         try {
             User user = getUserFromPrincipal(principal);
             cartItemService.updateCart(user, productId, quantity);
@@ -59,7 +62,8 @@ public class CartController {
         }
     }
     @DeleteMapping("/remove/{productId}")
-    public ResponseEntity<?> removeFromCart(@PathVariable Long productId, Principal principal) {
+    public ResponseEntity<?> removeFromCart(@PathVariable Long productId,
+                                            Principal principal) {
         try {
             User user = getUserFromPrincipal(principal);
             cartItemService.removeFromCart(user, productId);
@@ -68,4 +72,5 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error removing product from cart");
         }
     }
+
 }

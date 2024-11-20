@@ -1,4 +1,4 @@
-package com.casestudy5.service.role.product;
+package com.casestudy5.service.product;
 
 import com.casestudy5.model.entity.image.Image;
 import com.casestudy5.model.entity.image.ImageDTO;
@@ -165,22 +165,6 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
     }
 
-    private ProductDTO convertToDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(product.getId());
-        productDTO.setName(product.getName());
-        productDTO.setDescription(product.getDescription());
-        productDTO.setPrice(product.getPrice());
-        productDTO.setQuantity(product.getQuantity());
-        productDTO.setCategory(product.getCategory());
-        productDTO.setImages(
-                product.getImages().stream()
-                        .map(this::convertImageToDTO)
-                        .collect(Collectors.toList())
-        );
-        return productDTO;
-    }
-
     private ImageDTO convertImageToDTO(Image image) {
         ImageDTO imageDTO = new ImageDTO();
         imageDTO.setId(image.getId());
@@ -193,8 +177,6 @@ public class ProductService implements IProductService {
     public ProductDTO getProductById(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        // Chuyển đổi Product thành ProductDTO
         ProductDTO productDTO = convertToProductDTO(product);
 
         return productDTO;
@@ -208,13 +190,41 @@ public class ProductService implements IProductService {
         productDTO.setPrice(product.getPrice());
         productDTO.setQuantity(product.getQuantity());
         productDTO.setCategory(product.getCategory());
-
-
         List<ImageDTO> imageDTOs = product.getImages().stream()
                 .map(this::convertImageToDTO)
                 .collect(Collectors.toList());
         productDTO.setImages(imageDTOs);
 
+        return productDTO;
+    }
+
+    public List<ProductDTO> getProductsBySeller(Long userId) throws Exception {
+        List<Product> products = productRepository.findByUserId(userId);
+
+        if (products.isEmpty()) {
+            throw new Exception("No products found for this seller.");
+        }
+
+        List<ProductDTO> productDTOs = products.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return productDTOs;
+    }
+
+    private ProductDTO convertToDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setName(product.getName());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setQuantity(product.getQuantity());
+        productDTO.setCategory(product.getCategory());
+        productDTO.setImages(
+                product.getImages().stream()
+                        .map(this::convertImageToDTO)
+                        .collect(Collectors.toList())
+        );
         return productDTO;
     }
 

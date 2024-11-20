@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,13 +23,14 @@ public class Order {
     @JsonBackReference
     private User user;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    private double totalAmount;
+    private BigDecimal totalAmount;
 
     private LocalDateTime orderDate;
 

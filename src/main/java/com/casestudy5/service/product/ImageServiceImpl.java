@@ -1,4 +1,4 @@
-package com.casestudy5.service.role.product;
+package com.casestudy5.service.product;
 
 
 

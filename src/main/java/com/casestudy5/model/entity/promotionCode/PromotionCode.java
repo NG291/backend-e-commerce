@@ -23,6 +23,5 @@ public class PromotionCode {
     @Temporal(TemporalType.TIMESTAMP)
     private Date validUntil;
 
-    // Getters and Setters
 }
 

@@ -1,4 +1,4 @@
-package com.casestudy5.service.role.product;
+package com.casestudy5.service.product;
 
 import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.product.ProductDTO;
