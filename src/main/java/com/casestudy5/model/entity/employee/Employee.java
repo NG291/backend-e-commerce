@@ -44,6 +44,8 @@ public class Employee {
     @NotBlank(message = "Name is required")
     @Column(nullable = false)
     private String name;
+
+
     private LocalDate birthDate;
     @NotBlank(message = "Phone is required")
     @Column(nullable = false)

@@ -53,7 +53,7 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @JsonBackReference
-    @Size(max = 4, message = "Max 4 photos!")
+//    @Size(max = 4, message = "Max 4 photos!")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "product")
     private List<Image> images = new ArrayList<>();
 
