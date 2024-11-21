@@ -1,4 +1,4 @@
-package com.casestudy5.service.OrderItem;
+package com.casestudy5.service.orderItem;
 
 import com.casestudy5.model.entity.cart.CartItem;
 ;

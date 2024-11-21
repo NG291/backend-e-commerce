@@ -3,7 +3,7 @@ package com.casestudy5.service.payment;
 import com.casestudy5.model.entity.cart.*;
 import com.casestudy5.repo.ICartItemRepository;
 import com.casestudy5.repo.IPaymentRepository;
-import com.casestudy5.service.OrderItem.OrderItemService;
+import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

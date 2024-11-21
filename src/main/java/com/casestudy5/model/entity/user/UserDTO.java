@@ -14,13 +14,13 @@ import java.util.Set;
 @Setter
 public class UserDTO {
     private Long id;
-    @NotBlank(message = "Tên người dùng không được để trống")
-    @Size(min = 1, max = 50, message = "Tên người dùng phải có độ dài từ 1 đến 50 ký tự")
+    @NotBlank(message = "Username must be filled!")
+    @Size(min = 1, max = 50, message = "Username must be from 1-50 characters")
     private String username;
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "Password must be filled!")
     private String password;
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email phải hợp lệ")
+    @NotBlank(message = "Email must be filled!")
+    @Email(message = "Email must be legit!")
     private String email;
     private String name;
     private String phoneNumber;

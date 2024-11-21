@@ -152,9 +152,21 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public void deleteProduct(Long productId) {
+    public boolean deleteProduct(Long productId) {
+        try {
+            // Kiểm tra xem sản phẩm có tồn tại hay không
+            Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
 
+            // Nếu tồn tại, xóa sản phẩm
+            productRepository.delete(product);
+            return true;
+        } catch (Exception e) {
+            // Nếu có lỗi, trả về false
+            return false;
+        }
     }
+
+
 
 
     @Override
