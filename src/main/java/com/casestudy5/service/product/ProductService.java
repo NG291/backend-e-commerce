@@ -124,19 +124,14 @@ public class ProductService implements IProductService {
             image.setFileName(imageDTO.getFileName());
             image.setProduct(existingProduct);
 
-            // Lưu ảnh vào thư mục trên máy chủ
             try {
-                // Đường dẫn tới thư mục lưu ảnh
                 String filePath = Paths.get(uploadPathImage, imageDTO.getFileName()).toString();
                 File file = new File(filePath);
 
-                // Kiểm tra nếu thư mục chưa tồn tại, tạo mới
                 File parentDir = file.getParentFile();
                 if (!parentDir.exists()) {
                     parentDir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
                 }
-
-                // Lưu file vào thư mục
                 imageDTO.getFile().transferTo(file); // Lưu file vào đường dẫn đã chỉ định
             } catch (IOException e) {
                 throw new RuntimeException("Error saving image to server: " + imageDTO.getFileName(), e);

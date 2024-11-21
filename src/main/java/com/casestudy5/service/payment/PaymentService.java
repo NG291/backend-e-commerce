@@ -1,6 +1,8 @@
 package com.casestudy5.service.payment;
 
 import com.casestudy5.model.entity.cart.*;
+import com.casestudy5.model.entity.cart.Enum.PaymentMethodStatus;
+import com.casestudy5.model.entity.cart.Enum.PaymentStatus;
 import com.casestudy5.repo.ICartItemRepository;
 import com.casestudy5.repo.IPaymentRepository;
 import com.casestudy5.service.orderItem.OrderItemService;
@@ -43,10 +45,8 @@ public class PaymentService {
             throw new Exception("Payment amount does not match the total amount.");
         }
 
-        // Bước 3: Tạo đơn hàng
         Order order = orderService.createOrder(userId);
 
-        // Bước 4: Tạo các OrderItem từ CartItem
         orderItemService.createOrderItems(order.getId(), userId);
 
 

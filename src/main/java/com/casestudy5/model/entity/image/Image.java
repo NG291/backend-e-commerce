@@ -25,5 +25,8 @@
         @Column(name = "file_name")
         private String fileName;
 
+        public String getImageUrl() {
+            return  "/images/"  + this.fileName;
+        }
     }
 

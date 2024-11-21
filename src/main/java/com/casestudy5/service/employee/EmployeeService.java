@@ -46,11 +46,10 @@ public class EmployeeService implements IEmployeeService {
     }
 
     public void updateEmployee(Employee employee) {
-        // Kiểm tra ID có tồn tại hay không
+
         if (!iEmployeeRepository.existsById(employee.getId())) {
             throw new IllegalArgumentException("Employee does not exist!");
         }
-        // Kiểm tra tính duy nhất của username và email (trừ trường hợp trùng với chính nhân viên đó)
         if (iEmployeeRepository.existsByUsername(employee.getUsername()) &&
                 !iEmployeeRepository.findByUsername(employee.getUsername()).get().getId().equals(employee.getId())) {
             throw new IllegalArgumentException("Username already existed!");
@@ -63,11 +62,9 @@ public class EmployeeService implements IEmployeeService {
     }
 
     public void resetPassword(Long id) {
-        // Kiểm tra ID có tồn tại hay không
         Optional<Employee> optionalEmployee = iEmployeeRepository.findById(id);
         if (optionalEmployee.isPresent()) {
             Employee employee = optionalEmployee.get();
-            // Đặt lại mật khẩu về mặc định
             employee.setPassword(DEFAULT_PASSWORD);
             iEmployeeRepository.save(employee);
         } else {

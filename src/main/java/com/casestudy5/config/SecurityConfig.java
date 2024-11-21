@@ -1,5 +1,4 @@
 package com.casestudy5.config;
-
 import com.casestudy5.config.jwt.CustomAccessDeniedHandler;
 import com.casestudy5.config.jwt.JwtAuthenticationTokenFilter;
 import com.casestudy5.config.jwt.RestAuthenticationEntryPoint;
@@ -7,12 +6,10 @@ import com.casestudy5.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,7 +23,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
@@ -88,6 +84,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/reset", "/api/users/send-reset-link", "/api/users/reset-password").permitAll()
+                        .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/products/all","api/products/view/**").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
                         .requestMatchers("/api/order-items/**").permitAll()
@@ -99,15 +96,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/role").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/products/seller").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/products/**").hasAnyAuthority("ROLE_SELLER")
+                        .requestMatchers("/api/orders/pending").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/products/seller").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/cart/**").hasAnyAuthority("ROLE_USER")
                 )
                 .exceptionHandling(customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 

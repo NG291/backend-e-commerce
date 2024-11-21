@@ -1,6 +1,6 @@
 package com.casestudy5.model.entity.cart;
 
-import com.casestudy5.model.entity.product.Product;
+import com.casestudy5.model.entity.cart.Enum.OrderStatus;
 import com.casestudy5.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -39,6 +39,9 @@ public class Order {
         if (orderDate == null) {
             orderDate = LocalDateTime.now();
         }
+    }
+    public String getBuyerName() {
+        return user != null ? user.getName() : null;
     }
 }
 

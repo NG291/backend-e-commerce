@@ -1,7 +1,7 @@
 package com.casestudy5.controller.cart;
 
 import com.casestudy5.model.entity.cart.Payment;
-import com.casestudy5.model.entity.cart.PaymentMethodStatus;
+import com.casestudy5.model.entity.cart.Enum.PaymentMethodStatus;
 import com.casestudy5.service.payment.PaymentService;
 ;
 import org.springframework.beans.factory.annotation.Autowired;
