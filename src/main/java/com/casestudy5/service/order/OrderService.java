@@ -10,7 +10,7 @@ import com.casestudy5.repo.ICartItemRepository;
 import com.casestudy5.repo.IOrderItemRepository;
 import com.casestudy5.repo.IOrderRepository;
 import com.casestudy5.repo.IUserRepository;
-import com.casestudy5.service.OrderItem.OrderItemService;
+import com.casestudy5.service.orderItem.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

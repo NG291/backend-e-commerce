@@ -5,6 +5,7 @@ import com.casestudy5.model.entity.user.User;
 import com.casestudy5.service.IGenerateService;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IUserService extends IGenerateService<User> {
     User findByUsername(String username);
@@ -26,4 +27,5 @@ public interface IUserService extends IGenerateService<User> {
     List<User> searchUsers(String searchTerm);
 
     List<User> searchNameOrUsername(String searchName);
+
 }

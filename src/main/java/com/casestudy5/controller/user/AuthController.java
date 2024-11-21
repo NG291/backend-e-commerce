@@ -81,12 +81,12 @@ public class AuthController {
 
         // Kiểm tra xem tên người dùng đã tồn tại chưa
         if (userService.existsByUsername(userDTO.getUsername())) {
-            return new ResponseEntity<>("Tên người dùng đã tồn tại!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User already existed!", HttpStatus.BAD_REQUEST);
         }
 
         // Kiểm tra xem email đã tồn tại chưa
         if (userService.existsByEmail(userDTO.getEmail())) {
-            return new ResponseEntity<>("Email đã tồn tại!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Email already existed!", HttpStatus.BAD_REQUEST);
         }
 
         // Tạo đối tượng User từ UserDTO
@@ -100,7 +100,7 @@ public class AuthController {
 
         // Lấy vai trò ROLE_USER từ cơ sở dữ liệu
         Role userRole = roleService.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò"));
+                .orElseThrow(() -> new RuntimeException("Cannot find role!"));
 
         // Thiết lập vai trò cho người dùng
         Set<Role> roles = new HashSet<>();

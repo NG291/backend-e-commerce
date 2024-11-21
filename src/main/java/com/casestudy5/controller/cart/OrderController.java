@@ -2,9 +2,8 @@ package com.casestudy5.controller.cart;
 
 import com.casestudy5.config.UserPrinciple;
 import com.casestudy5.model.entity.cart.Order;
-import com.casestudy5.model.entity.cart.OrderItem;
 import com.casestudy5.model.entity.cart.OrderStatus;
-import com.casestudy5.service.OrderItem.OrderItemService;
+import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
