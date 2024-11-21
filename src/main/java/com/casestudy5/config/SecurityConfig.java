@@ -87,6 +87,7 @@ public class SecurityConfig {
                 }).csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/products/all","api/products/view/**").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
                         .requestMatchers("/api/order-items/**").permitAll()
@@ -98,7 +99,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/role").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/products/**").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
@@ -107,7 +107,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults())
+//                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 

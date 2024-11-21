@@ -1,9 +1,8 @@
 package com.casestudy5.controller.cart;
 
 import com.casestudy5.config.UserPrinciple;
-import com.casestudy5.model.entity.cart.Order;
-import com.casestudy5.model.entity.cart.OrderItem;
-import com.casestudy5.model.entity.cart.OrderStatus;
+import com.casestudy5.model.entity.cart.Enum.OrderStatus;
+import com.casestudy5.model.entity.cart.dto.OrderDTO;
 import com.casestudy5.service.OrderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -57,31 +55,25 @@ public class OrderController {
     @GetMapping("/user")
     public ResponseEntity<?> getOrdersForUser(@AuthenticationPrincipal UserPrinciple userPrinciple) {
         try {
-            // Lấy userId từ UserPrinciple (được lấy từ principal)
+
             Long userId = userPrinciple.getId();
-
-            // Gọi service để lấy danh sách đơn hàng hợp lệ của người dùng
-            List<Order> orders = orderService.getOrdersForUser(userId);
-
-            // Trả về danh sách đơn hàng nếu tìm thấy
+            List<OrderDTO> orders = orderService.getOrdersForUser(userId);
             return ResponseEntity.ok(orders);
 
         } catch (Exception e) {
-            // Nếu có lỗi, trả về thông báo lỗi
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-    @GetMapping("/seller")
-    public ResponseEntity<?> getOrdersForMerchant(@RequestParam Long sellerId) {
-        try {
-            // Gọi service để lấy danh sách đơn hàng
-            List<Order> orders = orderService.getOrdersForMerchant(sellerId);
 
-            // Trả về danh sách đơn hàng nếu tìm thấy
-            return ResponseEntity.ok(orders);
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<?> getOrdersForMerchant(@PathVariable Long sellerId) {
+        try {
+            List<OrderDTO> orderDTOs = orderService.getOrdersForMerchant(sellerId);
+
+            return ResponseEntity.ok(orderDTOs);
         } catch (Exception e) {
-            // Nếu có lỗi (ví dụ: không có đơn hàng nào), trả về thông báo lỗi
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No orders found for this merchant.");
         }
     }
+
 }
