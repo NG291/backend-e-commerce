@@ -76,4 +76,13 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/pending/{sellerId}")
+    public ResponseEntity<List<OrderDTO>> getPendingOrdersForMerchant(@PathVariable Long sellerId) {
+        try {
+            List<OrderDTO> pendingOrders = orderService.getPendingOrdersForMerchant(sellerId);
+            return ResponseEntity.ok(pendingOrders);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
 }

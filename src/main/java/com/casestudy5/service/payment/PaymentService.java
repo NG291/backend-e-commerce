@@ -45,10 +45,8 @@ public class PaymentService {
             throw new Exception("Payment amount does not match the total amount.");
         }
 
-        // Bước 3: Tạo đơn hàng
         Order order = orderService.createOrder(userId);
 
-        // Bước 4: Tạo các OrderItem từ CartItem
         orderItemService.createOrderItems(order.getId(), userId);
 
 

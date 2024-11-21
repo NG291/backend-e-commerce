@@ -28,14 +28,12 @@ public class UserPrinciple implements UserDetails {
         this.roles = roles;
     }
 
-    // Phương thức để tạo UserPrinciple từ User entity
     public static UserPrinciple build(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority(role.getName().name()));
         }
 
-        // Trả về đối tượng UserPrinciple với id, username, password, và roles
         return new UserPrinciple(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 

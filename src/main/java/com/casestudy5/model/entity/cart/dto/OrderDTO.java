@@ -11,14 +11,30 @@ public class OrderDTO {
     private LocalDateTime orderDate;
     private OrderStatus status;
     private List<OrderItemDTO> orderItems;
+    private String buyerName;
 
     // Constructor có tham số
+    public OrderDTO(Long id, BigDecimal totalAmount, LocalDateTime orderDate, OrderStatus status, List<OrderItemDTO> orderItems, String buyerName) {
+        this.id = id;
+        this.totalAmount = totalAmount;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.orderItems = orderItems;
+        this.buyerName = buyerName;
+    }
     public OrderDTO(Long id, BigDecimal totalAmount, LocalDateTime orderDate, OrderStatus status, List<OrderItemDTO> orderItems) {
         this.id = id;
         this.totalAmount = totalAmount;
         this.orderDate = orderDate;
         this.status = status;
         this.orderItems = orderItems;
+    }
+    public OrderDTO(Long id, BigDecimal totalAmount, LocalDateTime orderDate, OrderStatus status, String buyerName) {
+        this.id = id;
+        this.totalAmount = totalAmount;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.buyerName = buyerName;
     }
 
     // Getters và setters (nếu cần)
@@ -60,6 +76,13 @@ public class OrderDTO {
 
     public void setOrderItems(List<OrderItemDTO> orderItems) {
         this.orderItems = orderItems;
+    }
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
     }
 }
 

@@ -36,16 +36,13 @@ public class OrderService {
     private IOrderItemRepository orderItemRepository;
     @Autowired
     private ICartItemRepository cartItemRepository;
-    @Autowired
-    private OrderItemService orderItemService;
+
     public Order createOrder(Long userId) throws Exception {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
 
         if (cartItems.isEmpty()) {
             throw new Exception("No items in cart for the given user.");
         }
-
-        // Tính tổng số tiền
         BigDecimal totalAmount = cartItems.stream()
                 .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -54,16 +51,15 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Tạo đơn hàng
         Order order = new Order();
         order.setUser(user); // Trực tiếp gán userId
         order.setStatus(OrderStatus.PENDING); // Đơn hàng bắt đầu với trạng thái "PENDING"
         order.setTotalAmount(totalAmount);
         order.setOrderDate(LocalDateTime.now());
 
-        // Lưu đơn hàng vào cơ sở dữ liệu
         return orderRepository.save(order);
     }
+
     public void updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -100,7 +96,6 @@ public class OrderService {
                     })
                     .toList();
 
-            // Chuyển đổi Order sang OrderDTO
             return new OrderDTO(
                     order.getId(),
                     order.getTotalAmount(),
@@ -110,7 +105,6 @@ public class OrderService {
             );
         }).toList();
     }
-
 
     public List<OrderDTO> getOrdersForMerchant(Long sellerId) throws Exception {
         List<OrderItem> orderItems = orderItemRepository.findByProduct_UserId(sellerId);
@@ -135,7 +129,7 @@ public class OrderService {
                         String imageUrl = null;
                         if (!item.getProduct().getImages().isEmpty()) {
                             Image firstImage = item.getProduct().getImages().get(0);
-                            imageUrl =  "/images/"  + firstImage.getFileName();  // Hoặc sử dụng phương thức getImageUrl()
+                            imageUrl =  "/images/"  + firstImage.getFileName();
                         }
 
                         return new OrderItemDTO(
@@ -143,7 +137,7 @@ public class OrderService {
                                 item.getProduct().getName(),
                                 item.getQuantity(),
                                 item.getPrice(),
-                                imageUrl  // Sử dụng imageUrl
+                                imageUrl
                         );
                     })
                     .collect(Collectors.toList());
@@ -157,4 +151,29 @@ public class OrderService {
             );
         }).collect(Collectors.toList());
     }
+    public List<OrderDTO> getPendingOrdersForMerchant(Long sellerId) throws Exception {
+        List<OrderItem> pendingOrderItems = orderItemRepository.findByOrderStatusAndProduct_UserId(OrderStatus.PENDING, sellerId);
+        if (pendingOrderItems.isEmpty()) {
+            throw new Exception("No pending orders found for this merchant.");
+        }
+        Set<Order> sellerPendingOrders = new HashSet<>();
+        for (OrderItem orderItem : pendingOrderItems) {
+            sellerPendingOrders.add(orderItem.getOrder());
+        }
+
+        return sellerPendingOrders.stream().map(order -> {
+            String buyerName = order.getUser().getName();
+
+            return new OrderDTO(
+                    order.getId(),
+                    order.getTotalAmount(),
+                    order.getOrderDate(),
+                    order.getStatus(),
+                    buyerName
+            );
+        }).collect(Collectors.toList());
+    }
+
+
+
 }

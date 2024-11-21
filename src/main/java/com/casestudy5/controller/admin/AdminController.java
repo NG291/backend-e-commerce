@@ -15,7 +15,6 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
-//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/admin")
 public class AdminController {
 
@@ -25,7 +24,6 @@ public class AdminController {
     @Autowired
     private IEmployeeService iEmployeeService;
 
-    // Các endpoint liên quan đến Seller Request
     @GetMapping("/seller-requests")
     public List<SellerRequest> getSellerRequests() {
         return userService.getAllSellerRequests();
@@ -43,7 +41,6 @@ public class AdminController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    // Các endpoint liên quan đến quản lý nhân viên
     @GetMapping("/employees")
     public ResponseEntity<Iterable<Employee>> getAllEmployees() {
         return new ResponseEntity<>(iEmployeeService.findAll(), HttpStatus.OK);
@@ -65,22 +62,6 @@ public class AdminController {
         return employee.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
-//    @PutMapping("/employees/{id}")
-//    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-//        Optional<Employee> existingEmployee = iEmployeeService.findById(id);
-//        if (existingEmployee.isPresent()) {
-//            employee.setId(id);
-//            try {
-//                iEmployeeService.save(employee);
-//                return new ResponseEntity<>(employee, HttpStatus.OK);
-//            } catch (IllegalArgumentException e) {
-//                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//            }
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
 
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable Long id) {

@@ -40,6 +40,9 @@ public class Order {
             orderDate = LocalDateTime.now();
         }
     }
+    public String getBuyerName() {
+        return user != null ? user.getName() : null;
+    }
 }
 
 
