@@ -26,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -68,6 +69,7 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors(httpSecurityCorsConfigurer -> {
@@ -81,6 +83,7 @@ public class SecurityConfig {
                 }).csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/users/reset", "/api/users/send-reset-link", "/api/users/reset-password").permitAll()
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/products/all","api/products/view/**").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
@@ -92,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/role").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/products/seller").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

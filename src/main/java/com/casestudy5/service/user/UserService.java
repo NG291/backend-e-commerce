@@ -5,11 +5,14 @@ import com.casestudy5.model.entity.user.*;
 import com.casestudy5.repo.IRoleRepository;
 import com.casestudy5.repo.ISellerRequestRepository;
 import com.casestudy5.repo.IUserRepository;
+import com.casestudy5.service.email.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +27,9 @@ public class UserService implements IUserService, UserDetailsService {
     private IRoleRepository roleRepository;
     @Autowired
     private ISellerRequestRepository sellerRequestRepository;
+    @Autowired
+    @Lazy
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Iterable<User> findAll() {
@@ -163,11 +169,33 @@ public class UserService implements IUserService, UserDetailsService {
                 .collect(Collectors.toSet()));
         return dto;
     }
-  // Phương thức lấy danh sách người dùng
-  public List<UserDTO> getAllUsers() {
-      List<User> users = userRepository.findAll();
-      return users.stream()
-              .map(this::convertToUserDTO)
-              .collect(Collectors.toList());
-  }
+
+    // Phương thức lấy danh sách người dùng
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::convertToUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public String changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Verify the old password
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        // Check if the new password is different from the old password
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("New password must be different from the old password");
+        }
+
+        // Encode and save the new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return "Password changed successfully";
+    }
 }

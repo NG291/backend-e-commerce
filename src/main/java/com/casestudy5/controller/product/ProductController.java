@@ -65,7 +65,7 @@ public class ProductController {
         ImageDTO imageDTO = new ImageDTO();
         String originalFileName = imageFile.getOriginalFilename();
         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-        String randomFileName = UUID.randomUUID().toString() + fileExtension;
+        String randomFileName = UUID.randomUUID() + fileExtension;
 
         imageDTO.setFileName(randomFileName);
         imageDTO.setImageType(imageFile.getContentType());
@@ -105,6 +105,18 @@ public class ProductController {
 
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        boolean isDeleted = productServices.deleteProduct(productId);
+
+        if (isDeleted) {
+            return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Product not found or deletion failed", HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {

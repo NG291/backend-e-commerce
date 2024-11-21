@@ -2,7 +2,7 @@ package com.casestudy5.controller.cart;
 
 import com.casestudy5.model.entity.cart.CartItem;
 import com.casestudy5.model.entity.user.User;
-import com.casestudy5.service.Cart.CartItemService;
+import com.casestudy5.service.cart.CartItemService;
 import com.casestudy5.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
