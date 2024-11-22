@@ -173,6 +173,31 @@ public class OrderService {
             );
         }).collect(Collectors.toList());
     }
+    public List<OrderDTO> getPendingOrdersForUser(Long userId) throws Exception {
+        List<OrderItem> pendingOrderItems = orderItemRepository.findByOrderStatusAndOrder_UserId(OrderStatus.PENDING, userId);
+
+        if (pendingOrderItems.isEmpty()) {
+            throw new Exception("No pending orders found for this user.");
+        }
+
+        Set<Order> userPendingOrders = new HashSet<>();
+        for (OrderItem orderItem : pendingOrderItems) {
+            userPendingOrders.add(orderItem.getOrder());
+        }
+
+        return userPendingOrders.stream().map(order -> {
+            String sellerName =  order.getUser().getName();  // Tên người bán
+
+            return new OrderDTO(
+                    order.getId(),
+                    order.getTotalAmount(),
+                    order.getOrderDate(),
+                    order.getStatus(),
+                    sellerName
+            );
+        }).collect(Collectors.toList());
+    }
+
 
 
 

@@ -12,7 +12,6 @@ public class OrderItemDTO {
     private BigDecimal price;
     private String imageUrl;
 
-    // Constructor có tham số
     public OrderItemDTO(Long productId, String productName, int quantity, BigDecimal price,String imageUrl) {
         this.productId = productId;
         this.productName = productName;
