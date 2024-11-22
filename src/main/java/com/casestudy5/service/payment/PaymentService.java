@@ -3,8 +3,10 @@ package com.casestudy5.service.payment;
 import com.casestudy5.model.entity.cart.*;
 import com.casestudy5.model.entity.cart.Enum.PaymentMethodStatus;
 import com.casestudy5.model.entity.cart.Enum.PaymentStatus;
+import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.repo.ICartItemRepository;
 import com.casestudy5.repo.IPaymentRepository;
+import com.casestudy5.repo.IProductRepository;
 import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class PaymentService {
 
     @Autowired
     private IPaymentRepository paymentRepository;
+
+    @Autowired
+    private IProductRepository productRepository;
 
     @Autowired
     private OrderService orderService;
@@ -49,6 +54,17 @@ public class PaymentService {
 
         orderItemService.createOrderItems(order.getId(), userId);
 
+        for (CartItem cartItem : cartItems) {
+            Product product = cartItem.getProduct();
+            int newQuantity = product.getQuantity() - cartItem.getQuantity();
+
+            if (newQuantity < 0) {
+                throw new Exception("Not enough stock for product: " + product.getName());
+            }
+
+            product.setQuantity(newQuantity);
+            productRepository.save(product);
+        }
 
         Payment payment = new Payment();
         payment.setOrder(order);
@@ -56,9 +72,12 @@ public class PaymentService {
         payment.setPaymentMethod(paymentMethod);
         payment.setPaymentStatus(PaymentStatus.COMPLETED);
         payment.setPaymentDate(LocalDateTime.now());
-        paymentRepository.save(payment); // Lưu Payment vào database
+        paymentRepository.save(payment);
 
         cartItemRepository.deleteAll(cartItems);
+
         return payment;
     }
+
+
 }
