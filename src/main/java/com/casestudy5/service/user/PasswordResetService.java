@@ -4,11 +4,14 @@ import com.casestudy5.model.entity.user.User;
 import com.casestudy5.repo.IUserRepository;
 import com.casestudy5.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
+@EnableAsync
 @Service
 public class PasswordResetService {
 
@@ -21,7 +24,7 @@ public class PasswordResetService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
+    @Async
     public void resetPassword(String email) {
         User user = userRepository.findByEmail(email);
 
