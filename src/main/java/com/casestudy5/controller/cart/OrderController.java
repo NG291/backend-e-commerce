@@ -5,6 +5,7 @@ import com.casestudy5.model.entity.cart.Enum.OrderStatus;
 import com.casestudy5.model.entity.cart.dto.OrderDTO;
 import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
+import com.casestudy5.service.orderItem.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,6 +87,15 @@ public class OrderController {
             return ResponseEntity.ok(pendingOrders);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
+        }
+    }
+    @GetMapping("/pendingUser/{userId}")
+    public ResponseEntity<List<OrderDTO>> getPendingOrdersFoUser(@PathVariable Long userId) {
+        try {
+            List<OrderDTO> pendingOrders = orderService.getPendingOrdersForUser(userId);
+            return ResponseEntity.ok(pendingOrders);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 }
