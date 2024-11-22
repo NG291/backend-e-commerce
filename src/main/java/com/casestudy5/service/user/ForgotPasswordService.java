@@ -4,6 +4,7 @@ import com.casestudy5.model.entity.user.User;
 import com.casestudy5.repo.IUserRepository;
 import com.casestudy5.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,9 @@ public class ForgotPasswordService {
     @Autowired
     private IUserRepository userRepository;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     public void sendResetLink(String email) {
         User user = userRepository.findByEmail(email);
 
@@ -26,7 +30,7 @@ public class ForgotPasswordService {
         user.setTokenExpiry(LocalDateTime.now().plusMinutes(15)); // Token expires in 15 minutes
         userRepository.save(user);
 
-        String resetLink = "http://localhost:3000/reset-password" ; // Adjust to your frontend route
+        String resetLink = frontendUrl + "reset-password?token=" + resetToken; // Adjust to your frontend route
         String subject = "Reset Your Password";
         String body = "Click the link to reset your password: " + resetLink;
         emailService.sendEmail(email, subject, body);

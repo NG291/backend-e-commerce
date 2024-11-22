@@ -3,7 +3,7 @@ package com.casestudy5.controller.cart;
 import com.casestudy5.config.UserPrinciple;
 import com.casestudy5.model.entity.cart.Enum.OrderStatus;
 import com.casestudy5.model.entity.cart.dto.OrderDTO;
-import com.casestudy5.service.OrderItem.OrderItemService;
+import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

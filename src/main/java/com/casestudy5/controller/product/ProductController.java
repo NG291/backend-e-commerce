@@ -79,7 +79,6 @@ public class ProductController {
         // Lấy thông tin người dùng từ token JWT
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
 
-
         Category categoryObj = categoryService.findByName(category);
 
         // Chuyển đổi các file ảnh thành ImageDTO
@@ -143,6 +142,12 @@ public class ProductController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/seller/{userId}")
+    public ResponseEntity<List<ProductDTO>> getProductsBySeller(@PathVariable Long userId) throws Exception {
+        List<ProductDTO> products = productServices.getProductsBySeller(userId);
+        return ResponseEntity.ok(products);
     }
 
 
