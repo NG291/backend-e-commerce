@@ -232,6 +232,15 @@ public class ProductService implements IProductService {
         );
         return productDTO;
     }
+    public void stopSellingProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        if (product.isActive()) {
+            product.setActive(false);
+            productRepository.save(product);
+        }
+    }
 
     public List<ProductDTO> filterProducts(String category, String name, BigDecimal minPrice, BigDecimal maxPrice, String sortOrder) {
         List<Product> products;
