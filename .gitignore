@@ -40,4 +40,4 @@ dev.env
 application.properties
 upload_file.properties
 .properties
-.yml
+application.yml
