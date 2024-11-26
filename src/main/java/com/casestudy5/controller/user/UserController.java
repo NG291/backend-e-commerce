@@ -75,28 +75,33 @@ public class UserController {
     private ForgotPasswordService forgotPasswordService;
 
     @GetMapping("/send-reset-link")
-    public String sendResetLink(@RequestParam String email) {
-        forgotPasswordService.sendResetLink(email);
-        return "Reset link sent successfully";
+    public ResponseEntity<String> sendResetLink(@RequestParam String email) {
+        try {
+            forgotPasswordService.sendResetLink(email);
+            return ResponseEntity.ok("Reset link sent! We will check and send link if your email exist.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error sending reset link.");
+        }
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");  // Now the email comes from the request body
+        String token = requestBody.get("token");
         String newPassword = requestBody.get("newPassword");
 
+        if (token == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Token and new password must be provided.");
+        }
+
         try {
-            forgotPasswordService.resetPasswordWithEmail(email, newPassword);
+            forgotPasswordService.resetPasswordWithToken(token, newPassword);
             return ResponseEntity.ok("Password reset successfully.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while resetting the password.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error resetting password.");
         }
     }
-
-
-
-
-
 }
