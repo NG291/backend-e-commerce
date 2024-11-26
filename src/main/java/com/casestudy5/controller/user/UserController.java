@@ -78,7 +78,7 @@ public class UserController {
     public ResponseEntity<String> sendResetLink(@RequestParam String email) {
         try {
             forgotPasswordService.sendResetLink(email);
-            return ResponseEntity.ok("Reset link sent successfully. Please check your email.");
+            return ResponseEntity.ok("Reset link sent! We will check and send link if your email exist.");
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found.");
         } catch (Exception e) {
