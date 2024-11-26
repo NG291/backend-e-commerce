@@ -3,7 +3,6 @@ package com.casestudy5.controller.cart;
 import com.casestudy5.config.UserPrinciple;
 import com.casestudy5.model.entity.cart.Enum.OrderStatus;
 import com.casestudy5.model.entity.cart.dto.OrderDTO;
-import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import com.casestudy5.service.orderItem.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,6 @@ public class OrderController {
 
             return ResponseEntity.ok(orderDTOs);
         } catch (Exception e) {
-            // Nếu có lỗi (ví dụ: không có đơn hàng nào), trả về thông báo lỗi
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No orders found for this merchant.");
         }
     }

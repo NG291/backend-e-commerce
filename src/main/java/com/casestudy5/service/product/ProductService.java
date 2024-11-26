@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -162,6 +161,9 @@ public class ProductService implements IProductService {
         }
     }
 
+
+
+
     @Override
     public List<ProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -241,29 +243,6 @@ public class ProductService implements IProductService {
             productRepository.save(product);
         }
     }
-
-    public List<ProductDTO> filterProducts(String category, String name, BigDecimal minPrice, BigDecimal maxPrice, String sortOrder) {
-        List<Product> products;
-
-        if (category != null) {
-            products = productRepository.findByCategoryName(category);
-        } else if (name != null) {
-            products = productRepository.findByNameContainingIgnoreCase(name);
-        } else if (minPrice != null && maxPrice != null) {
-            products = productRepository.findByPriceRange(minPrice, maxPrice);
-        } else if ("asc".equalsIgnoreCase(sortOrder)) {
-            products = productRepository.findAllByOrderByPriceAsc();
-        } else if ("desc".equalsIgnoreCase(sortOrder)) {
-            products = productRepository.findAllByOrderByPriceDesc();
-        } else {
-            products = productRepository.findAll();
-        }
-
-        return products.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
 
 }
 
