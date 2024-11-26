@@ -150,6 +150,16 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<List<ProductDTO>> filterProducts(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
+        List<ProductDTO> filteredProducts = productServices.filterProducts(category, name, minPrice, maxPrice, sortOrder);
+        return ResponseEntity.ok(filteredProducts);
+    }
 
 }
 
