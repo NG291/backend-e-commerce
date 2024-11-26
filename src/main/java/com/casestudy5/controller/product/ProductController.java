@@ -79,6 +79,7 @@ public class ProductController {
         // Lấy thông tin người dùng từ token JWT
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
 
+
         Category categoryObj = categoryService.findByName(category);
 
         // Chuyển đổi các file ảnh thành ImageDTO
@@ -144,22 +145,6 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/seller/{userId}")
-    public ResponseEntity<List<ProductDTO>> getProductsBySeller(@PathVariable Long userId) throws Exception {
-        List<ProductDTO> products = productServices.getProductsBySeller(userId);
-        return ResponseEntity.ok(products);
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<List<ProductDTO>> filterProducts(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
-        List<ProductDTO> filteredProducts = productServices.filterProducts(category, name, minPrice, maxPrice, sortOrder);
-        return ResponseEntity.ok(filteredProducts);
-    }
 
 }
 

@@ -86,7 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
                         .requestMatchers("/api/users/reset", "/api/users/send-reset-link", "/api/users/reset-password").permitAll()
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
-                        .requestMatchers("/api/products/all", "/api/products/seller/{userId}", "api/products/view/**").permitAll()
+                        .requestMatchers("/api/products/all","api/products/view/**").permitAll()
                         .requestMatchers("/api/order-items/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
