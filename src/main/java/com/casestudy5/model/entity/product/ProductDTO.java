@@ -19,4 +19,5 @@ public class ProductDTO {
     private int quantity;
     private Category category;
     private List<ImageDTO> images;
+    private boolean isActive;
 }

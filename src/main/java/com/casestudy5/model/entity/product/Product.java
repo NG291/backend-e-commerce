@@ -34,7 +34,6 @@ public class Product {
     @Column(precision = 10, scale = 2)
     @Positive(message = "Must be bigger than 0!")
     private BigDecimal price;
-
     private boolean isActive = true;
     @Min(value = 1, message = "Must be bigger than 0!")
     private int quantity;
