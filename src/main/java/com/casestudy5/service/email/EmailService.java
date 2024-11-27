@@ -16,7 +16,7 @@ public class EmailService implements IEmailService{
     @Override
     public void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("nguyenduckien2406@gmail.com"); // Địa chỉ email của bạn
+        message.setFrom("hoangle12691@gmail.com"); // Địa chỉ email của bạn
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);

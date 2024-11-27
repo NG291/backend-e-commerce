@@ -3,16 +3,11 @@ package com.casestudy5.model.entity.user;
 
 import com.casestudy5.model.entity.cart.CartItem;
 import com.casestudy5.model.entity.cart.Order;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +28,8 @@ public class User {
     private String password;
 
     private String name;
+
+    private String avatar;
 
     @Email(message = "Email must be valid!")
     @NotBlank(message = "Email cannot be blank!")

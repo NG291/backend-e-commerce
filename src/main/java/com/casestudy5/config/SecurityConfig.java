@@ -64,7 +64,6 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userService);
-        authenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
@@ -87,22 +86,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/reset", "/api/users/send-reset-link", "/api/users/reset-password").permitAll()
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/products/all", "/api/products/seller/{userId}", "api/products/view/**").permitAll()
-                        .requestMatchers("/api/order-items/**").permitAll()
+                        .requestMatchers("/api/order-items/**","/api/orders/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/register","/api/auth/login").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/role").permitAll()
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/products/seller").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/products/**").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/orders/pending").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/cart/**").hasAnyAuthority("ROLE_USER")
+                        .requestMatchers("/api/reviews/product-check/**").permitAll()
+                        .requestMatchers("/api/admin/**","/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/users/**","/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/products/seller", "/api/products/**","/api/orders/pending","/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
+                        .requestMatchers("/api/cart/**","/api/reviews/product/**").hasAnyAuthority("ROLE_USER")
                 )
                 .exceptionHandling(customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -4,7 +4,6 @@ import com.casestudy5.model.entity.product.Product;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Data

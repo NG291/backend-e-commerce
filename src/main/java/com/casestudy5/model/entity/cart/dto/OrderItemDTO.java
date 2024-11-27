@@ -3,8 +3,8 @@ package com.casestudy5.model.entity.cart.dto;
 import com.casestudy5.model.entity.cart.Order;
 import com.casestudy5.model.entity.product.Product;
 import lombok.Data;
-
 import java.math.BigDecimal;
+
 public class OrderItemDTO {
     private Long productId;
     private String productName;

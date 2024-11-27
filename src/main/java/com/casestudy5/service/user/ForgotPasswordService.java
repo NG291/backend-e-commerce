@@ -40,7 +40,7 @@ public class ForgotPasswordService {
         user.setTokenExpiry(LocalDateTime.now().plusMinutes(15)); // Token expires in 15 minutes
         userRepository.save(user);
 
-        String resetLink = frontendUrl + "reset-password?token=" + resetToken;
+        String resetLink = frontendUrl + "/reset-password?token=" + resetToken;
         String subject = "Reset Your Password";
         String body = "Click the link to reset your password: " + resetLink;
         emailService.sendEmail(email, subject, body);
