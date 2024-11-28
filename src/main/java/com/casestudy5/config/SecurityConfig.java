@@ -113,25 +113,22 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/seller", "/api/products/**","/api/orders/pending","/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/cart/**","/api/reviews/product/**").hasAnyAuthority("ROLE_USER")
                 )
-                .oauth2Login(oauth2login -> {
-                    oauth2login
-                            .authorizationEndpoint(authorization ->
-                                    authorization.baseUri("/oauth2/authorize/google"))
-                            .redirectionEndpoint(redirection ->
-                                    redirection.baseUri("/oauth2/callback/google"))
-                            .userInfoEndpoint(userInfo ->
-                                    userInfo.userService(oAuth2UserService())) // Thay userInfoEndpoint
-                            .successHandler((request, response, authentication) -> {
-                                OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                                String email = oAuth2User.getAttribute("email");
-                                if (email == null) {
-                                    throw new RuntimeException("Email not found in OAuth2User attributes!");
-                                }
-                                String token = jwtTokenHelper.generateToken(email);
-                                response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token);
-                            })
-                            .failureHandler(new SimpleUrlAuthenticationFailureHandler());
-                })
+                .oauth2Login(oauth2login -> oauth2login
+                        .authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorize/google"))
+                        .redirectionEndpoint(redir -> redir.baseUri("/oauth2/callback/google"))
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))
+                        .successHandler((request, response, authentication) -> {
+                            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+                            String email = oAuth2User.getAttribute("email");
+                            if (email == null) {
+                                throw new RuntimeException("Email not found in OAuth2User attributes!");
+                            }
+                            String token = jwtTokenHelper.generateToken(email);
+                            response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token);
+                        })
+                        .failureHandler(new SimpleUrlAuthenticationFailureHandler())
+                )
+
                 .exceptionHandling(customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();

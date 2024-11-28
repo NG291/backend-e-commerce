@@ -28,14 +28,21 @@ public class OAuth2Controller {
     @GetMapping("/success")
     public void callbackOAuth2(@AuthenticationPrincipal OAuth2User oAuth2User, HttpServletResponse response) throws IOException {
         String userName = oAuth2User.getAttribute("email");
+        if (userName == null) {
+            throw new RuntimeException("Email not found in OAuth2User attributes!");
+        }
+
+        // Fetch or create the user
         User user = oAuth2Service.getUser(userName);
         if (user == null) {
             user = oAuth2Service.createUser(oAuth2User, "google");
         }
 
+        // Generate JWT token
         String token = jwtTokenHelper.generateToken(user.getUsername());
 
-        // Redirect to the front-end with the JWT token
+        // Log the token and redirect
+        System.out.println("Generated JWT: " + token);
         response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token);
     }
 }
