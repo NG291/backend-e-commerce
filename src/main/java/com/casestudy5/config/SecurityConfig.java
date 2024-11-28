@@ -1,8 +1,12 @@
 package com.casestudy5.config;
 import com.casestudy5.config.jwt.CustomAccessDeniedHandler;
+//import com.casestudy5.config.jwt.CustomOAuth2LoginSuccessHandler;
+import com.casestudy5.config.jwt.JWTTokenHelper;
 import com.casestudy5.config.jwt.JwtAuthenticationTokenFilter;
 import com.casestudy5.config.jwt.RestAuthenticationEntryPoint;
 import com.casestudy5.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,17 +20,23 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +44,9 @@ import java.util.List;
 public class SecurityConfig {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JWTTokenHelper jwtTokenHelper;
 
     @Bean
     public JwtAuthenticationTokenFilter jwtAuthenticationFilter() {
@@ -64,11 +77,13 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userService);
-        authenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
-
+    @Bean
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
+        return new DefaultOAuth2UserService();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -87,27 +102,38 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/reset", "/api/users/send-reset-link", "/api/users/reset-password").permitAll()
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/api/products/all", "/api/products/seller/{userId}", "api/products/view/**").permitAll()
-                        .requestMatchers("/api/order-items/**").permitAll()
+                        .requestMatchers("/api/order-items/**","/api/orders/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/register","/api/auth/login", "/oauth2/**").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/role").permitAll()
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/products/seller").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/products/**").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/orders/pending").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
-                        .requestMatchers("/api/cart/**").hasAnyAuthority("ROLE_USER")
+                        .requestMatchers("/api/reviews/product-check/**").permitAll()
+                        .requestMatchers("/api/admin/**","/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/users/**","/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/products/seller", "/api/products/**","/api/orders/pending","/api/orders/seller").hasAnyAuthority("ROLE_SELLER")
+                        .requestMatchers("/api/cart/**","/api/reviews/product/**").hasAnyAuthority("ROLE_USER")
                 )
+                .oauth2Login(oauth2login -> {
+                    oauth2login
+                            .authorizationEndpoint(authorization ->
+                                    authorization.baseUri("/oauth2/authorize/google"))
+                            .redirectionEndpoint(redirection ->
+                                    redirection.baseUri("/oauth2/callback/google"))
+                            .userInfoEndpoint(userInfo ->
+                                    userInfo.userService(oAuth2UserService())) // Thay userInfoEndpoint
+                            .successHandler((request, response, authentication) -> {
+                                OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+                                String email = oAuth2User.getAttribute("email");
+                                if (email == null) {
+                                    throw new RuntimeException("Email not found in OAuth2User attributes!");
+                                }
+                                String token = jwtTokenHelper.generateToken(email);
+                                response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token);
+                            })
+                            .failureHandler(new SimpleUrlAuthenticationFailureHandler());
+                })
                 .exceptionHandling(customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
-
 }
-
