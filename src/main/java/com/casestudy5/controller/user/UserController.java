@@ -61,7 +61,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-// Password
+
     @Autowired
     private PasswordResetService passwordResetService;
 

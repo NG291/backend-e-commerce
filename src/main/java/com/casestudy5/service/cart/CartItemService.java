@@ -6,6 +6,7 @@ import com.casestudy5.model.entity.user.User;
 import com.casestudy5.repo.ICartItemRepository;
 import com.casestudy5.repo.IProductRepository;
 import com.casestudy5.repo.IUserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,23 +14,22 @@ import java.util.List;
 
 @Service
 public class CartItemService implements ICartItemService {
+
     @Autowired
-    ICartItemRepository  cartItemRepository;
+    private ICartItemRepository cartItemRepository;
     @Autowired
     private IProductRepository productRepository;
-
     @Autowired
     private IUserRepository userRepository;
+
     @Override
     public void addToCart(User user, Long productId, int quantity) {
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product);
 
         if (cartItem != null) {
-
             cartItem.setQuantity(cartItem.getQuantity() + quantity);
             cartItemRepository.save(cartItem);
         } else {
@@ -48,18 +48,28 @@ public class CartItemService implements ICartItemService {
 
     @Override
     public void updateCart(User user, Long productId, int quantity) {
-        CartItem cartItem = cartItemRepository.findByUserAndProduct(user, productRepository.findById(productId).orElse(null));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product);
         if (cartItem != null) {
             cartItem.setQuantity(quantity);
             cartItemRepository.save(cartItem);
+        } else {
+            throw new EntityNotFoundException("Cart item not found for user and product");
         }
     }
 
     @Override
     public void removeFromCart(User user, Long productId) {
-        CartItem cartItem = cartItemRepository.findByUserAndProduct(user, productRepository.findById(productId).orElse(null));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product);
         if (cartItem != null) {
             cartItemRepository.delete(cartItem);
+        } else {
+            throw new EntityNotFoundException("Cart item not found for user and product");
         }
     }
 }

@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IUserService extends IGenerateService<User> {
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
-    User findByName(String name);
+    Optional<User> findByName(String name);
 
     String requestSellerRole(String username);
 
@@ -22,10 +22,9 @@ public interface IUserService extends IGenerateService<User> {
 
     List<SellerRequest> getAllSellerRequests();
 
-    User findByRole(String username);
+    Optional<User> findByRole(String username);
 
     List<User> searchUsers(String searchTerm);
 
     List<User> searchNameOrUsername(String searchName);
-
 }

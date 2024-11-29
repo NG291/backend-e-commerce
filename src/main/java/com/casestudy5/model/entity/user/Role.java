@@ -10,7 +10,16 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoleName name;
+
+    public Role(RoleName roleName) {
+        this.name = roleName;
+    }
+
+    public Role() {
+    }
 }
+

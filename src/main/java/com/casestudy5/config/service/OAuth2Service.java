@@ -8,6 +8,8 @@ import com.casestudy5.repo.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -19,8 +21,9 @@ public class OAuth2Service {
     @Autowired
     private IRoleRepository roleRepository;
 
-    public User getUser(String email) {
-        return userRepository.findByEmail(email);
+    // Thay đổi phương thức này trả về Optional<User>
+    public Optional<User> getUser(String email) {
+        return userRepository.findByEmail(email);  // Tìm người dùng bằng email
     }
 
     public User createUser(OAuth2User oAuth2User, String provider) {
@@ -48,4 +51,13 @@ public class OAuth2Service {
 
         return userRepository.save(user);
     }
+
+    // Add the updateUser method
+    public User updateUser(OAuth2User oAuth2User, User existingUser) {
+        existingUser.setName(oAuth2User.getAttribute("name"));
+        existingUser.setEmail(oAuth2User.getAttribute("email"));
+        // Add other fields you want to update here, such as profile picture, etc.
+        return userRepository.save(existingUser);  // Save updated user to database
+    }
+
 }

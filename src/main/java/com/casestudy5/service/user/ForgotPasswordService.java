@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @EnableAsync
@@ -29,11 +30,9 @@ public class ForgotPasswordService {
 
     @Async
     public void sendResetLink(String email) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        if (user == null) {
-            throw new EntityNotFoundException("User not found.");
-        }
+        User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         String resetToken = UUID.randomUUID().toString();
         user.setResetToken(resetToken);

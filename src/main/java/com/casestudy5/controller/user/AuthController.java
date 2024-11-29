@@ -1,13 +1,12 @@
 package com.casestudy5.controller.user;
 
+import com.casestudy5.config.jwt.JWTTokenHelper;
 import com.casestudy5.config.service.JwtResponse;
 import com.casestudy5.config.service.JwtService;
-import com.casestudy5.model.entity.user.Role;
-import com.casestudy5.model.entity.user.RoleName;
-import com.casestudy5.model.entity.user.User;
-import com.casestudy5.model.entity.user.UserDTO;
+import com.casestudy5.model.entity.user.*;
 import com.casestudy5.service.role.IRoleService;
 import com.casestudy5.service.role.RoleService;
+import com.casestudy5.service.user.TokenBlacklistService;
 import com.casestudy5.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -47,29 +46,30 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JWTTokenHelper jwtTokenHelper;
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO loginRequest) {
+    public ResponseEntity<UserToken> login(@RequestBody LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtService.generateTokenLogin(authentication);
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User currentUser = userService.findByUsername(loginRequest.getUsername());
+            User user = (User) authentication.getPrincipal();
+            if (!user.isEnabled()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
 
-            return ResponseEntity.ok(new JwtResponse(
-                    currentUser.getId(),
-                    jwt,
-                    userDetails.getUsername(),
-                    currentUser.getName(),
-                    userDetails.getAuthorities()));
-
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+            String token = jwtTokenHelper.generateToken(user.getEmail());
+            return ResponseEntity.ok(UserToken.builder().token(token).build());
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
 
 
     @PostMapping("/register")
@@ -114,13 +114,11 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED); // Trả về trạng thái CREATED cho việc đăng ký thành công
     }
 
-
-
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         String token = jwtService.extractTokenFromRequest(request);
         if (token != null && jwtService.validateJwtToken(token)) {
-            // Add token to a blacklist if required or perform other logout logic
+            tokenBlacklistService.addToBlacklist(token);
             return ResponseEntity.ok("Logged out successfully!");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");

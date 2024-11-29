@@ -1,14 +1,14 @@
 package com.casestudy5.service.user;
 
 import com.casestudy5.config.UserPrinciple;
+import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.user.*;
-import com.casestudy5.repo.IRoleRepository;
-import com.casestudy5.repo.ISellerRequestRepository;
-import com.casestudy5.repo.IUserRepository;
+import com.casestudy5.repo.*;
 import com.casestudy5.service.email.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,15 +20,25 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService, UserDetailsService {
+
     @Autowired
     private IUserRepository userRepository;
+
     @Autowired
     private IRoleRepository roleRepository;
+
     @Autowired
     private ISellerRequestRepository sellerRequestRepository;
+
     @Autowired
     @Lazy
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ICartItemRepository cartItemRepository;
+
+    @Autowired
+    private IProductRepository productRepository;
 
     @Override
     public Iterable<User> findAll() {
@@ -52,35 +62,42 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        return UserPrinciple.build(user);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.isEnabled(),
+                true, true, true,
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                        .toList()
+        );
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByUsername(email);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
-    public User findByName(String name) {
+    public Optional<User> findByName(String name) {
         return userRepository.findByName(name);
     }
 
     @Override
     public String requestSellerRole(String username) {
-        User user = userRepository.findByUsername(username);
-
-        if (user == null) {
-            throw new EntityNotFoundException("User not found");
-        }
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (sellerRequestRepository.existsByUser(user)) {
-            return "You already sent request!";
+            return "You already sent a request!";
         }
 
         SellerRequest request = new SellerRequest();
@@ -102,13 +119,12 @@ public class UserService implements IUserService, UserDetailsService {
         }
 
         User user = request.getUser();
-
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new EntityNotFoundException("ROLE SELLER does not exist!"));
+                .orElseThrow(() -> new EntityNotFoundException("ROLE USER does not exist!"));
+
         user.getRoles().remove(userRole);
-
-
         user.getRoles().add(sellerRole.get());
+
         userRepository.save(user);
 
         request.setStatus("APPROVED");
@@ -121,6 +137,8 @@ public class UserService implements IUserService, UserDetailsService {
     public String rejectSeller(Long userId) {
         SellerRequest request = sellerRequestRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Request does not exist!"));
+
+        request.setStatus("REJECTED");
         sellerRequestRepository.save(request);
 
         return "Request denied!";
@@ -132,29 +150,28 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public User findByRole(String username) {
-        return null;
+    public Optional<User> findByRole(String username) {
+        return Optional.empty();
     }
 
     @Override
     public List<User> searchUsers(String searchTerm) {
-        return List.of();
+        return userRepository.findByNameContainingIgnoreCaseOrUsernameContainingIgnoreCase(searchTerm, searchTerm);
     }
 
     @Override
     public List<User> searchNameOrUsername(String searchName) {
-        return userRepository.findByNameContainingIgnoreCaseOrUsernameContainingIgnoreCase(searchName, searchName);
+        return List.of();
     }
 
     public boolean existsByUsername(String username) {
-        return userRepository.findByUsername(username) != null;
+        return userRepository.findByUsername(username).isPresent();
     }
 
     public boolean existsByEmail(String email) {
-        return userRepository.findByUsername(email) != null;  // có thể sửa lại thành `findByEmail` nếu có phương thức này trong repository
+        return userRepository.findByEmail(email).isPresent();
     }
 
-    // Phương thức chuyển đổi từ user sang UserDTO
     public UserDTO convertToUserDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
@@ -169,7 +186,6 @@ public class UserService implements IUserService, UserDetailsService {
         return dto;
     }
 
-    // Phương thức lấy danh sách người dùng
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
@@ -181,20 +197,25 @@ public class UserService implements IUserService, UserDetailsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        // Verify the old password
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new IllegalArgumentException("Old password is incorrect");
         }
 
-        // Check if the new password is different from the old password
         if (passwordEncoder.matches(newPassword, user.getPassword())) {
             throw new IllegalArgumentException("New password must be different from the old password");
         }
 
-        // Encode and save the new password
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         return "Password changed successfully";
     }
+
+    public boolean isCartItemExists(User user, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        return cartItemRepository.findByUserAndProduct(user, product) != null;
+    }
+
+
 }

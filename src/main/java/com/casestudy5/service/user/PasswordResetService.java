@@ -3,6 +3,7 @@ package com.casestudy5.service.user;
 import com.casestudy5.model.entity.user.User;
 import com.casestudy5.repo.IUserRepository;
 import com.casestudy5.service.email.EmailService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @EnableAsync
 @Service
@@ -26,7 +28,9 @@ public class PasswordResetService {
 
     @Async
     public void resetPassword(String email) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // Generate a random default password
         String defaultPassword = generateRandomPassword(12); // Length of 12 characters
