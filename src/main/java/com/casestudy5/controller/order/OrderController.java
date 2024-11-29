@@ -1,8 +1,8 @@
-package com.casestudy5.controller.cart;
+package com.casestudy5.controller.order;
 
 import com.casestudy5.config.UserPrinciple;
-import com.casestudy5.model.entity.cart.Enum.OrderStatus;
-import com.casestudy5.model.entity.cart.dto.OrderDTO;
+import com.casestudy5.model.entity.order.OrderStatus;
+import com.casestudy5.model.entity.order.OrderDTO;
 import com.casestudy5.service.order.OrderService;
 import com.casestudy5.service.orderItem.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,9 @@ public class OrderController {
     }
 
     @PutMapping("/reject/{orderId}")
-    public ResponseEntity<String> rejectOrder(@PathVariable Long orderId) {
+    public ResponseEntity<String> rejectOrder(@PathVariable Long orderId, @RequestParam String rejectionReason) {
         try {
-            orderService.updateOrderStatus(orderId, OrderStatus.REJECT);
+            orderService.updateOrderStatus(orderId, OrderStatus.REJECT, rejectionReason);
             return ResponseEntity.ok("Order has been rejected successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

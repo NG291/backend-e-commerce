@@ -2,7 +2,7 @@ package com.casestudy5.controller.product;
 
 import com.casestudy5.config.UserPrinciple;
 import com.casestudy5.model.entity.image.ImageDTO;
-import com.casestudy5.model.entity.product.Category;
+import com.casestudy5.model.entity.category.Category;
 import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.product.ProductDTO;
 import com.casestudy5.service.category.ICategoryService;
@@ -144,6 +144,19 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/category")
+    public ResponseEntity<List<ProductDTO>> getProductsByCategoryName(@RequestParam String categoryName) {
+        List<ProductDTO> products = productServices.getProductsByCategoryName(categoryName);
+        return ResponseEntity.ok(products);
+    }
+    @GetMapping("/filter-by-price")
+    public ResponseEntity<List<ProductDTO>> getProductsByPriceRange(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice) {
+
+        List<ProductDTO> products = productServices.getProductsByPriceRange(minPrice, maxPrice);
+
+        return ResponseEntity.ok(products);
+    }
 
 }
-

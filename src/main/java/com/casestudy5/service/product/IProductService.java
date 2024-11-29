@@ -23,7 +23,5 @@ public interface IProductService {
 
     List<ProductDTO> getAllProducts();
 
-
-
 }
 

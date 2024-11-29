@@ -1,6 +1,8 @@
 package com.casestudy5.controller.user;
 
 
+import com.casestudy5.model.entity.user.FormUpdateUser;
+import com.casestudy5.model.entity.user.UpdateUser;
 import com.casestudy5.model.entity.user.User;
 import com.casestudy5.model.entity.user.UserDTO;
 import com.casestudy5.service.user.ForgotPasswordService;
@@ -11,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +65,8 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-// Password
+
+    // Password
     @Autowired
     private PasswordResetService passwordResetService;
 
@@ -95,8 +100,32 @@ public class UserController {
         }
     }
 
+    @PutMapping("{id}/update")
+    public ResponseEntity<UpdateUser> updateUser(@PathVariable Long id,
+                                                 @RequestParam String name,
+                                                 @RequestParam String phoneNumber,
+                                                 @RequestParam String address,
+                                                 @RequestParam(required = false) LocalDate birthDate,
+                                                 @RequestParam(required = false) MultipartFile avatar) {
+        FormUpdateUser formUpdateUser = FormUpdateUser.builder()
+                .id(id)
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .address(address)
+                .birthDate(birthDate)
+                .avatar(avatar)
+                .build();
+        try {
+            UpdateUser updateUser = userService.updateUser(formUpdateUser);
+            return ResponseEntity.ok(updateUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
-
-
+    @GetMapping("/{id}")
+    public UpdateUser getUser(@PathVariable Long id){
+        return userService.getUserById(id);
+    }
 
 }

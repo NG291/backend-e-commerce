@@ -1,5 +1,6 @@
 package com.casestudy5.model.entity.product;
 
+import com.casestudy5.model.entity.category.Category;
 import com.casestudy5.model.entity.image.ImageDTO;
 
 import lombok.Data;

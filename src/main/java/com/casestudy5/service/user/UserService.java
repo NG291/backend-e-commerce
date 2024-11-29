@@ -8,13 +8,17 @@ import com.casestudy5.repo.IUserRepository;
 import com.casestudy5.service.email.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +34,9 @@ public class UserService implements IUserService, UserDetailsService {
     @Autowired
     @Lazy
     private PasswordEncoder passwordEncoder;
+
+    @Value("${upload.image}")
+    private String uploadPathImage;
 
     @Override
     public Iterable<User> findAll() {
@@ -198,4 +205,57 @@ public class UserService implements IUserService, UserDetailsService {
 
         return "Password changed successfully";
     }
+
+    public UpdateUser updateUser(FormUpdateUser formUpdateUser) throws IOException {
+        Optional<User> userOptional = userRepository.findById(formUpdateUser.getId());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            //Thuc hien cap nhat thong tin
+            user.setName(formUpdateUser.getName());
+            user.setPhoneNumber(formUpdateUser.getPhoneNumber());
+            user.setAddress(formUpdateUser.getAddress());
+            user.setBirthDate(formUpdateUser.getBirthDate());
+            String avatar = null;
+            if (formUpdateUser.getAvatar() != null && !formUpdateUser.getAvatar().isEmpty()) {
+                avatar = saveAvatar(formUpdateUser.getAvatar());
+                user.setAvatar(avatar);
+            }
+            User updateUser = userRepository.save(user);
+
+            return UpdateUser.builder()
+                    .id(updateUser.getId())
+                    .name(updateUser.getName())
+                    .phoneNumber(updateUser.getPhoneNumber())
+                    .address(updateUser.getAddress())
+                    .birthDate(updateUser.getBirthDate())
+                    .avatar(updateUser.getAvatar())
+                    .build();
+        } else {
+            throw new RuntimeException("User not found with ID" + formUpdateUser.getId());
+
+        }
+
+    }
+
+    private String saveAvatar(MultipartFile avatarFile) throws IOException {
+        String fileName = System.currentTimeMillis() + "_" + avatarFile.getOriginalFilename();
+        String filePath = uploadPathImage + "/" + fileName;
+        File dest = new File(filePath);
+        avatarFile.transferTo(dest);
+        return fileName;
+    }
+
+    public UpdateUser getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return UpdateUser.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
+                .birthDate(user.getBirthDate())
+                .avatar(user.getAvatar())
+                .build();
+    }
+
 }

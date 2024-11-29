@@ -1,5 +1,6 @@
-package com.casestudy5.model.entity.cart;
+package com.casestudy5.model.entity.orderItem;
 
+import com.casestudy5.model.entity.order.Order;
 import com.casestudy5.model.entity.product.Product;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

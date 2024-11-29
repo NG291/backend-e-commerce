@@ -1,6 +1,6 @@
-package com.casestudy5.model.entity.cart.dto;
+package com.casestudy5.model.entity.order;
 
-import com.casestudy5.model.entity.cart.Enum.OrderStatus;
+import com.casestudy5.model.entity.orderItem.OrderItemDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

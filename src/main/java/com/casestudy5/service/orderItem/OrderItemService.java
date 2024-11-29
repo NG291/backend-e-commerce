@@ -1,8 +1,8 @@
 package com.casestudy5.service.orderItem;
 
 import com.casestudy5.model.entity.cart.CartItem;
-import com.casestudy5.model.entity.cart.Order;
-import com.casestudy5.model.entity.cart.OrderItem;
+import com.casestudy5.model.entity.order.Order;
+import com.casestudy5.model.entity.orderItem.OrderItem;
 import com.casestudy5.repo.ICartItemRepository;
 import com.casestudy5.repo.IOrderItemRepository;
 import com.casestudy5.repo.IOrderRepository;

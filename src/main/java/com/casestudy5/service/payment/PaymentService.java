@@ -1,12 +1,14 @@
 package com.casestudy5.service.payment;
 
 import com.casestudy5.model.entity.cart.*;
-import com.casestudy5.model.entity.cart.Enum.PaymentMethodStatus;
-import com.casestudy5.model.entity.cart.Enum.PaymentStatus;
-import com.casestudy5.model.entity.product.Product;
-import com.casestudy5.repo.ICartItemRepository;
-import com.casestudy5.repo.IPaymentRepository;
-import com.casestudy5.repo.IProductRepository;
+import com.casestudy5.model.entity.notification.Notification;
+import com.casestudy5.model.entity.payment.PaymentMethodStatus;
+import com.casestudy5.model.entity.payment.PaymentStatus;
+import com.casestudy5.model.entity.order.Order;
+import com.casestudy5.model.entity.payment.Payment;
+import com.casestudy5.model.entity.user.User;
+import com.casestudy5.repo.*;
+import com.casestudy5.service.email.IEmailService;
 import com.casestudy5.service.orderItem.OrderItemService;
 import com.casestudy5.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -34,6 +38,12 @@ public class PaymentService {
 
     @Autowired
     private OrderItemService orderItemService;
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private INotificationRepository notificationRepository;
+    @Autowired
+    private IEmailService emailService;
 
     @Transactional
     public Payment processPayment(Long userId, double paymentAmount, PaymentMethodStatus paymentMethod) throws Exception {
@@ -41,7 +51,6 @@ public class PaymentService {
         if (cartItems.isEmpty()) {
             throw new Exception("Your cart is empty.");
         }
-
         BigDecimal totalAmount = cartItems.stream()
                 .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -49,22 +58,9 @@ public class PaymentService {
         if (BigDecimal.valueOf(paymentAmount).compareTo(totalAmount) != 0) {
             throw new Exception("Payment amount does not match the total amount.");
         }
-
         Order order = orderService.createOrder(userId);
 
         orderItemService.createOrderItems(order.getId(), userId);
-
-        for (CartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
-            int newQuantity = product.getQuantity() - cartItem.getQuantity();
-
-            if (newQuantity < 0) {
-                throw new Exception("Not enough stock for product: " + product.getName());
-            }
-
-            product.setQuantity(newQuantity);
-            productRepository.save(product);
-        }
 
         Payment payment = new Payment();
         payment.setOrder(order);
@@ -76,8 +72,33 @@ public class PaymentService {
 
         cartItemRepository.deleteAll(cartItems);
 
+        Set<Long> sellerUserIds = cartItems.stream()
+                .map(cartItem -> cartItem.getProduct().getUser().getId())
+                .collect(Collectors.toSet());
+        for (Long sellerUserId : sellerUserIds) {
+            User seller = userRepository.findById(sellerUserId)
+                    .orElseThrow(() -> new Exception("Seller not found"));
+
+            sendOrderNotification(seller, order.getId());
+        }
         return payment;
     }
 
+    private void sendOrderNotification(User seller, Long orderId) {
+        Notification notification = new Notification();
+        notification.setUser(seller);
+        notification.setMessage("Bạn có một đơn hàng mới. ID đơn hàng: " + orderId);
+
+        notificationRepository.save(notification);
+
+        sendNotificationToSeller(notification);
+    }
+    private void sendNotificationToSeller(Notification notification) {
+        String emailContent = notification.getMessage();
+        String recipientEmail = notification.getUser().getEmail();
+
+        // Gửi email cho người bán
+        emailService.sendEmail(recipientEmail, "Thông báo đơn hàng mới", emailContent);
+    }
 
 }

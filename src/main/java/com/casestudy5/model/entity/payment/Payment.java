@@ -1,7 +1,6 @@
-package com.casestudy5.model.entity.cart;
+package com.casestudy5.model.entity.payment;
 
-import com.casestudy5.model.entity.cart.Enum.PaymentMethodStatus;
-import com.casestudy5.model.entity.cart.Enum.PaymentStatus;
+import com.casestudy5.model.entity.order.Order;
 import jakarta.persistence.*;
 import lombok.Data;
 

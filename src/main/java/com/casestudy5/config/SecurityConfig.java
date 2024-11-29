@@ -26,8 +26,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -86,17 +84,18 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
                         .requestMatchers("/api/users/reset", "/api/users/send-reset-link", "/api/users/reset-password").permitAll()
                         .requestMatchers("/api/users/request-seller-role").hasAnyAuthority("ROLE_USER")
-                        .requestMatchers("/api/products/all","api/products/view/**").permitAll()
+                        .requestMatchers("/api/products/all","api/products/view/**","api/products/category","api/products/filter-by-price").permitAll()
                         .requestMatchers("/api/order-items/**").permitAll()
-                        .requestMatchers("/api/categories/**").permitAll()
+                        .requestMatchers("/api/notifications/**").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
+                        .requestMatchers("/api/reviews/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/role").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN","ROLE_SELLER")
                         .requestMatchers("/api/products/seller").hasAnyAuthority("ROLE_SELLER")
                         .requestMatchers("/api/transactions/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/products/**").hasAnyAuthority("ROLE_SELLER")

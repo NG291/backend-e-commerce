@@ -1,6 +1,6 @@
 package com.casestudy5.controller.product;
 
-import com.casestudy5.model.entity.product.Category;
+import com.casestudy5.model.entity.category.Category;
 import com.casestudy5.service.category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

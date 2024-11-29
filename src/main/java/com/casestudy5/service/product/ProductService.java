@@ -1,10 +1,12 @@
 package com.casestudy5.service.product;
 
+import com.casestudy5.model.entity.category.Category;
 import com.casestudy5.model.entity.image.Image;
 import com.casestudy5.model.entity.image.ImageDTO;
 import com.casestudy5.model.entity.product.Product;
 import com.casestudy5.model.entity.product.ProductDTO;
 import com.casestudy5.model.entity.user.User;
+import com.casestudy5.repo.ICategoryRepository;
 import com.casestudy5.repo.IImageRepository;
 import com.casestudy5.repo.IProductRepository;
 import com.casestudy5.repo.IUserRepository;
@@ -31,7 +33,11 @@ public class ProductService implements IProductService {
     private IImageRepository imageRepository;
 
     @Autowired
+    private ICategoryRepository categoryRepository;
+
+    @Autowired
     private IUserRepository userRepository;
+
     @Value("${upload.image}")
     private String uploadPathImage;
     @Override
@@ -51,7 +57,6 @@ public class ProductService implements IProductService {
 
         product = productRepository.save(product);
 
-        // Lưu các ảnh vào thư mục và cơ sở dữ liệu
         for (ImageDTO imageDTO : productDTO.getImages()) {
 
             Image existingImage = imageRepository.findByFileName(imageDTO.getFileName());
@@ -230,39 +235,24 @@ public class ProductService implements IProductService {
                         .map(this::convertImageToDTO)
                         .collect(Collectors.toList())
         );
+        productDTO.setActive(product.isActive());
         return productDTO;
     }
-    public void stopSellingProduct(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found!"));
 
-        if (product.isActive()) {
-            product.setActive(false);
-            productRepository.save(product);
-        }
+    public List<ProductDTO> getProductsByCategoryName(String categoryName) {
+        List<Product> products = productRepository.findByCategoryName(categoryName);
+        return products.stream().map(this::convertToDTO).toList();
     }
 
-    public List<ProductDTO> filterProducts(String category, String name, BigDecimal minPrice, BigDecimal maxPrice, String sortOrder) {
-        List<Product> products;
+    public List<ProductDTO> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
+        if (minPrice == null) minPrice = BigDecimal.ZERO;
+        if (maxPrice == null) maxPrice = BigDecimal.valueOf(Long.MAX_VALUE);
 
-        if (category != null) {
-            products = productRepository.findByCategoryName(category);
-        } else if (name != null) {
-            products = productRepository.findByNameContainingIgnoreCase(name);
-        } else if (minPrice != null && maxPrice != null) {
-            products = productRepository.findByPriceRange(minPrice, maxPrice);
-        } else if ("asc".equalsIgnoreCase(sortOrder)) {
-            products = productRepository.findAllByOrderByPriceAsc();
-        } else if ("desc".equalsIgnoreCase(sortOrder)) {
-            products = productRepository.findAllByOrderByPriceDesc();
-        } else {
-            products = productRepository.findAll();
-        }
+        List<Product> products = productRepository.findByPriceRange(minPrice, maxPrice);
 
-        return products.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return products.stream().map(this::convertToDTO).toList();
     }
+
 
 }
 
