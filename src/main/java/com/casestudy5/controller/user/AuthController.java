@@ -47,7 +47,6 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO loginRequest) {
         try {

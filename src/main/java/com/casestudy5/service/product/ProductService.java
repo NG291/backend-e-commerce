@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -254,37 +255,41 @@ public class ProductService implements IProductService {
         return products.stream().map(this::convertToDTO).toList();
     }
 
-    public List<ProductDTO> getTopSellingProducts() {
-        List<Object[]> results = productRepository.findTopSellingProducts();
+    public List<ProductDTO> getTopSellingProducts(Long productId) {
+        // Lấy kết quả từ repository, sử dụng productId để lọc sản phẩm của cửa hàng.
+        List<Object[]> results = productRepository.findRelatedProducts(productId);
 
         List<ProductDTO> topSellingProducts = new ArrayList<>();
 
+        // Duyệt qua kết quả để chuyển đổi dữ liệu sang ProductDTO
         for (Object[] row : results) {
             ProductDTO productDTO = new ProductDTO();
-            productDTO.setId((Long) row[0]);
-            productDTO.setName((String) row[1]);
-            productDTO.setDescription((String) row[2]);
-            productDTO.setPrice((BigDecimal) row[3]);
-            productDTO.setQuantity((Integer) row[4]);
-            productDTO.setActive((Boolean) row[5]);
+            productDTO.setId(((Long) row[0]).longValue());   // id
+            productDTO.setName((String) row[1]);  // name
+            productDTO.setDescription((String) row[2]);  // description
+            productDTO.setPrice((BigDecimal) row[3]);  // price
+            productDTO.setQuantity((Integer) row[4]);  // quantity
+            productDTO.setActive((Boolean) row[5]);  // is_active
 
-            String images = (String) row[6];
+            // Xử lý hình ảnh nếu có
+            String images = (String) row[6];  // image filenames as a comma-separated string
             if (images != null && !images.isEmpty()) {
                 String[] imageUrls = images.split(",");
                 List<ImageDTO> imageDTOs = new ArrayList<>();
                 for (String imageUrl : imageUrls) {
                     ImageDTO imageDTO = new ImageDTO();
-                    imageDTO.setFileName(imageUrl);
+                    imageDTO.setFileName(imageUrl);  // Cài đặt tên tệp hình ảnh
                     imageDTOs.add(imageDTO);
                 }
-                productDTO.setImages(imageDTOs);
+                productDTO.setImages(imageDTOs);  // Gắn danh sách hình ảnh vào productDTO
             }
 
-            topSellingProducts.add(productDTO);
+            topSellingProducts.add(productDTO);  // Thêm sản phẩm vào danh sách kết quả
         }
 
-        return topSellingProducts;
+        return topSellingProducts;  // Trả về danh sách sản phẩm
     }
+
 }
 
 
