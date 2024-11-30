@@ -21,5 +21,19 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
             @Param("maxPrice") BigDecimal maxPrice
     );
 
+    @Query(value = "SELECT p.id, " +
+            "p.name, " +
+            "p.description, " +
+            "p.price, " +
+            "p.quantity, " +
+            "p.is_active, " +
+            "GROUP_CONCAT(DISTINCT i.file_name) AS images " +
+            "FROM products p " +
+            "JOIN order_items oi ON p.id = oi.product_id " +
+            "LEFT JOIN images i ON p.id = i.product_id " +
+            "GROUP BY p.id, p.name, p.description, p.price, p.quantity, p.is_active " +
+            "ORDER BY SUM(oi.quantity) DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTopSellingProducts();
 
 }

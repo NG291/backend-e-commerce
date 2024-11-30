@@ -40,6 +40,7 @@ public class ProductService implements IProductService {
 
     @Value("${upload.image}")
     private String uploadPathImage;
+
     @Override
     @Transactional
     public Product addProduct(ProductDTO productDTO, Long userId) {
@@ -253,8 +254,39 @@ public class ProductService implements IProductService {
         return products.stream().map(this::convertToDTO).toList();
     }
 
+    public List<ProductDTO> getTopSellingProducts() {
+        List<Object[]> results = productRepository.findTopSellingProducts();
 
+        List<ProductDTO> topSellingProducts = new ArrayList<>();
+
+        for (Object[] row : results) {
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setId((Long) row[0]);
+            productDTO.setName((String) row[1]);
+            productDTO.setDescription((String) row[2]);
+            productDTO.setPrice((BigDecimal) row[3]);
+            productDTO.setQuantity((Integer) row[4]);
+            productDTO.setActive((Boolean) row[5]);
+
+            String images = (String) row[6];
+            if (images != null && !images.isEmpty()) {
+                String[] imageUrls = images.split(",");
+                List<ImageDTO> imageDTOs = new ArrayList<>();
+                for (String imageUrl : imageUrls) {
+                    ImageDTO imageDTO = new ImageDTO();
+                    imageDTO.setFileName(imageUrl);
+                    imageDTOs.add(imageDTO);
+                }
+                productDTO.setImages(imageDTOs);
+            }
+
+            topSellingProducts.add(productDTO);
+        }
+
+        return topSellingProducts;
+    }
 }
+
 
 
 

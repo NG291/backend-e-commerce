@@ -117,7 +117,6 @@ public class ProductController {
         }
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<ProductDTO> products = productServices.getAllProducts();
@@ -157,6 +156,10 @@ public class ProductController {
         List<ProductDTO> products = productServices.getProductsByPriceRange(minPrice, maxPrice);
 
         return ResponseEntity.ok(products);
+    }
+    @GetMapping("/top-selling")
+    public List<ProductDTO> getTopSellingProducts() {
+        return productServices.getTopSellingProducts();
     }
 
 }
