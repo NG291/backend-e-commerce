@@ -157,9 +157,10 @@ public class ProductController {
 
         return ResponseEntity.ok(products);
     }
-    @GetMapping("/top-selling")
-    public List<ProductDTO> getTopSellingProducts() {
-        return productServices.getTopSellingProducts();
+    @GetMapping("/related/{productId}")
+    public ResponseEntity<List<ProductDTO>> getTopSellingProducts(@PathVariable("productId") Long productId) {
+        List<ProductDTO> products = productServices.getTopSellingProducts(productId);
+        return ResponseEntity.ok(products);
     }
 
 }
