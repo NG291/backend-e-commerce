@@ -30,6 +30,7 @@ public class Product {
 
     private String name;
     private String description;
+
     @Column(precision = 10, scale = 2)
     @Positive(message = "Must be bigger than 0!")
     private BigDecimal price;

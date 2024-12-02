@@ -3,7 +3,6 @@ package com.casestudy5.model.entity.payment;
 import com.casestudy5.model.entity.order.Order;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
