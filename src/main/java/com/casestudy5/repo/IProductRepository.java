@@ -31,10 +31,10 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
             "FROM products p " +
             "LEFT JOIN images i ON p.id = i.product_id " +
             "WHERE p.user_id = (SELECT p2.user_id FROM products p2 WHERE p2.id = :productId) " +
-            "AND p.id != :productId " + // Loại trừ chính sản phẩm đang xem
+            "AND p.id != :productId " +
             "GROUP BY p.id, p.name, p.description, p.price, p.quantity, p.is_active " +
-            "ORDER BY RAND() " + // Lấy ngẫu nhiên các sản phẩm liên quan
-            "LIMIT 5", nativeQuery = true)
+            "ORDER BY RAND() " +
+            "LIMIT 4", nativeQuery = true)
     List<Object[]> findRelatedProducts(@Param("productId") Long productId);
 
 }
