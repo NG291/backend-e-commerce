@@ -26,7 +26,7 @@
 
 ## Công Nghệ Sử Dụng  
 - **Backend**: Spring Boot, Spring Data JPA, Spring Security  
-- **Frontend**: Thymeleaf, HTML, CSS, JavaScript  
+- **Frontend**: React, HTML, CSS, JavaScript,Bootstrap
 - **Cơ sở dữ liệu**: MySQL  
 - **Quản lý phụ thuộc**: Gradle  
 - **Tích hợp API**: Gửi email kích hoạt tài khoản,
